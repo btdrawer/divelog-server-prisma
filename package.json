@@ -1,0 +1,40 @@
+{
+    "name": "divelog-server-graphql",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "start": "env-cmd -f ./config/.env nodemon src/app.js",
+        "get-schema": "graphql get-schema -p prisma --dotenv ./config/.env",
+        "lint": "eslint --fix .",
+        "test": "env-cmd -f ./config/.test.env jest --runInBand",
+        "test:watch": "env-cmd -f ./config/.test.env jest --runInBand --watch"
+    },
+    "jest": {
+        "globalSetup": "./tests/setup/globalSetup.js",
+        "globalTeardown": "./tests/setup/globalTeardown.js",
+        "testEnvironment": "node"
+    },
+    "dependencies": {
+        "apollo-server": "^2.11.0",
+        "bcrypt": "^4.0.1",
+        "env-cmd": "^10.0.1",
+        "graphql-import": "^1.0.1",
+        "graphql-tools": "^4.0.7",
+        "jsonwebtoken": "^8.5.1",
+        "moment": "^2.24.0",
+        "nodemon": "^1.19.2",
+        "prisma-binding": "^2.3.16"
+    },
+    "devDependencies": {
+        "apollo-boost": "^0.4.7",
+        "eslint": "^6.8.0",
+        "eslint-config-prettier": "^6.10.0",
+        "eslint-plugin-prettier": "^3.1.2",
+        "graphql": "^14.6.0",
+        "graphql-cli": "^3.0.14",
+        "jest": "^25.2.3",
+        "node-fetch": "^2.6.0",
+        "prettier": "^1.19.1",
+        "typescript": "^3.8.3"
+    }
+}

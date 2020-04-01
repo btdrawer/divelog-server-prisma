@@ -1,0 +1,7 @@
+node_modules
+*.env
+*.DS_Store
+
+prisma/docker-compose.yml
+prisma/prisma.yml
+prisma/generated

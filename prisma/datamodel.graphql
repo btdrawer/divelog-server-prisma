@@ -1,0 +1,76 @@
+type User {
+    id: ID! @id
+    name: String!
+    username: String! @unique
+    email: String! @unique
+    password: String!
+    dives: [Dive] @relation(name: "DiveToUser", link: INLINE)
+    managerOfClubs: [Club] @relation(name: "ManagerToClub", link: INLINE)
+    memberOfClubs: [Club] @relation(name: "MemberToClub", link: INLINE)
+    gear: [Gear] @relation(name: "GearToUser", link: INLINE)
+    friends: [User] @relation(name: "FriendToUser", link: INLINE)
+    friendRequestsInbox: [User]
+        @relation(name: "IncomingRequestToUser", link: INLINE)
+    friendRequestsSent: [User]
+        @relation(name: "SentRequestToUser", link: INLINE)
+    createdAt: DateTime! @createdAt
+    updatedAt: DateTime! @updatedAt
+}
+
+type Dive {
+    id: ID! @id
+    timeIn: String
+    timeOut: String
+    bottomTime: Float
+    safetyStopTime: Float
+    diveTime: Float
+    maxDepth: Float
+    location: String
+    description: String
+    club: Club @relation(name: "ClubToUser", link: INLINE)
+    user: User! @relation(name: "DiveToUser")
+    buddies: [User] @relation(name: "BuddyToDive", link: INLINE)
+    gear: [Gear] @relation(name: "GearToDive", link: INLINE)
+    public: Boolean
+    createdAt: DateTime! @createdAt
+    updatedAt: DateTime! @updatedAt
+}
+
+type Club {
+    id: ID! @id
+    name: String!
+    location: String!
+    managers: [User!]! @relation(name: "ManagerToClub")
+    members: [User] @relation(name: "MemberToClub")
+    website: String
+    createdAt: DateTime! @createdAt
+    updatedAt: DateTime! @updatedAt
+}
+
+type Gear {
+    id: ID! @id
+    name: String
+    brand: String
+    model: String
+    type: String
+    owner: User! @relation(name: "GearToUser")
+    createdAt: DateTime! @createdAt
+    updatedAt: DateTime! @updatedAt
+}
+
+type Group {
+    id: ID! @id
+    name: String!
+    participants: [User!]! @relation(name: "GroupToUser", link: INLINE)
+    messages: [Message!]! @relation(name: "MessageToGroup", link: INLINE)
+    createdAt: DateTime! @createdAt
+    updatedAt: DateTime! @updatedAt
+}
+
+type Message {
+    id: ID! @id
+    text: String!
+    sender: User! @relation(name: "MessageToUser", link: INLINE)
+    createdAt: DateTime! @createdAt
+    updatedAt: DateTime! @updatedAt
+}

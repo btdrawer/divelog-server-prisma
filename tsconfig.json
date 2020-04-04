@@ -10,5 +10,10 @@
         "noImplicitReturns": true,
         "esModuleInterop": true
     },
-    "include": ["./src/**/*"]
+    "include": [
+        "./src/**/*",
+        "./tests/operations/**/*",
+        "./tests/setup/**/*",
+        "./tests/utils/**/*"
+    ]
 }

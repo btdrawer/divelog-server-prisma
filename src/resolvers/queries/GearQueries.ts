@@ -1,7 +1,7 @@
 import { getUserId } from "../../authentication/authUtils";
 import formatQueryArgs from "../../utils/formatQueryArgs";
 import { Context, QueryArgs, FieldResolver } from "../../types";
-import { Gear } from "../../types/schema";
+import { Gear } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const GearQueries = {

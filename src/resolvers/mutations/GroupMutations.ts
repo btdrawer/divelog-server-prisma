@@ -1,7 +1,8 @@
 import { getUserId } from "../../authentication/authUtils";
 import groupMiddleware from "../../authentication/middleware/groupMiddleware";
 import { Context, FieldResolver } from "../../types";
-import { Group, CreateGroupInput } from "../../types/schema";
+import { Group } from "../../types/typeDefs";
+import { CreateGroupInput } from "../../types/inputs";
 import { GraphQLResolveInfo } from "graphql";
 
 const updateOperationTemplate = async (input: {

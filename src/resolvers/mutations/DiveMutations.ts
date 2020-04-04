@@ -3,7 +3,8 @@ import diveMiddleware from "../../authentication/middleware/diveMiddleware";
 import { UPDATE, DELETE } from "../../constants/methods";
 import moment from "moment";
 import { Context, FieldResolver } from "../../types";
-import { Dive, CreateDiveInput, UpdateDiveInput } from "../../types/schema";
+import { Dive } from "../../types/typeDefs";
+import { CreateDiveInput, UpdateDiveInput } from "../../types/inputs";
 import { GraphQLResolveInfo } from "graphql";
 
 const processTime = (data: CreateDiveInput | UpdateDiveInput) => {

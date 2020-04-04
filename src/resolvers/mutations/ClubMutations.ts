@@ -3,7 +3,7 @@ import clubMiddleware from "../../authentication/middleware/clubMiddleware";
 import { UPDATE, DELETE } from "../../constants/methods";
 import clubOperations from "../../constants/clubOperations";
 import { Context, FieldResolver } from "../../types";
-import { Club } from "../../types/schema";
+import { Club } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const ClubMutations = {

@@ -11,13 +11,9 @@ import {
 } from "../../constants/errorCodes";
 import * as bcrypt from "bcrypt";
 import { Context, FieldResolver } from "../../types";
-import {
-    User,
-    Club,
-    CreateUserInput,
-    UpdateUserInput
-} from "../../types/schema";
+import { User, Club } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
+import { CreateUserInput, UpdateUserInput } from "../../types/inputs";
 
 const formatAuthPayload = (user: User, token: string): any => ({
     user: {

@@ -10,8 +10,8 @@ import {
     removeClubMember,
     deleteClub
 } from "./operations/clubOperations";
-import * as getClient from "./utils/getClient";
-import * as prisma from "../src/prisma";
+import { getClient } from "./utils/getClient";
+import { prisma } from "../src/prisma";
 
 const client = getClient();
 
@@ -19,9 +19,7 @@ describe("Clubs", () => {
     beforeEach(
         async () =>
             await seedDatabase({
-                resources: {
-                    clubs: true
-                }
+                clubs: true
             })
     );
 

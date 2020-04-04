@@ -1,7 +1,6 @@
-const ApolloClient = require("apollo-boost").default;
-const fetch = require("node-fetch");
+import ApolloClient from "apollo-boost";
 
-module.exports = jwt =>
+export const getClient = (jwt?: string) =>
     new ApolloClient({
         uri: `http://localhost:${process.env.SERVER_PORT}`,
         request: operation => {
@@ -12,6 +11,5 @@ module.exports = jwt =>
                     }
                 });
             }
-        },
-        fetch
+        }
     });

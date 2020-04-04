@@ -1,7 +1,7 @@
 import { getUserId } from "../../authentication/authUtils";
 import formatQueryArgs from "../../utils/formatQueryArgs";
 import { Context, QueryArgs, FieldResolver } from "../../types";
-import { Group } from "../../types/schema";
+import { Group } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const GroupQueries = {

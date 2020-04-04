@@ -1,5 +1,5 @@
 import { getUserId } from "../../authentication/authUtils";
-import { User as UserSchema } from "../../types/schema";
+import { User as UserSchema } from "../../types/typeDefs";
 import { Context, QueryArgs } from "../../types";
 
 const FRAGMENT_USER_ID = "fragment userId on User { id }";

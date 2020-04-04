@@ -1,7 +1,34 @@
-const prisma = require("../../src/prisma");
-const { signJwt, hashPassword } = require("../../src/authentication/authUtils");
+import { prisma } from "../../src/prisma";
+import { signJwt, hashPassword } from "../../src/authentication/authUtils";
+import {
+    AuthPayload,
+    User,
+    Dive,
+    Club,
+    Gear,
+    Group
+} from "../../src/types/typeDefs";
+import {
+    Input,
+    CreateUserInput,
+    CreateDiveInput,
+    CreateClubInput,
+    GearInput,
+    CreateGroupInput
+} from "../../src/types/inputs";
 
-const users = [
+interface TestData<TInput = Input, TOutput = any> {
+    input: TInput;
+    output: TOutput | any;
+    unhashedPassword?: string;
+    token?: string;
+}
+
+type IdArray = {
+    id: any;
+}[];
+
+export const users: TestData<CreateUserInput, User>[] = [
     {
         input: {
             name: "User 1",
@@ -9,8 +36,8 @@ const users = [
             email: "user1@example.com",
             password: hashPassword("aafghd7675")
         },
+        output: {},
         unhashedPassword: "aafghd7675",
-        output: undefined,
         token: undefined
     },
     {
@@ -20,8 +47,8 @@ const users = [
             email: "user2@example.com",
             password: hashPassword("jhhd6625")
         },
+        output: {},
         unhashedPassword: "jhhd6625",
-        output: undefined,
         token: undefined
     },
     {
@@ -31,13 +58,13 @@ const users = [
             email: "user3@example.com",
             password: hashPassword("hd8y78rw4y")
         },
+        output: {},
         unhashedPassword: "hd8y78rw4y",
-        output: undefined,
         token: undefined
     }
 ];
 
-const dives = [
+export const dives: TestData<CreateDiveInput, Dive>[] = [
     {
         input: {
             timeIn: "2020-01-01T11:00:00",
@@ -49,7 +76,7 @@ const dives = [
             description: "Dive description",
             public: true
         },
-        output: undefined
+        output: {}
     },
     {
         input: {
@@ -62,7 +89,7 @@ const dives = [
             description: "Dive description",
             public: false
         },
-        output: undefined
+        output: {}
     },
     {
         input: {
@@ -75,18 +102,18 @@ const dives = [
             description: "Dive description 2",
             public: true
         },
-        output: undefined
+        output: {}
     }
 ];
 
-const clubs = [
+export const clubs: TestData<CreateClubInput, Club>[] = [
     {
         input: {
             name: "A",
             location: "B",
             website: "example.com"
         },
-        output: undefined
+        output: {}
     },
     {
         input: {
@@ -94,11 +121,11 @@ const clubs = [
             location: "Y",
             website: "example.co.uk"
         },
-        output: undefined
+        output: {}
     }
 ];
 
-const gear = [
+export const gear: TestData<GearInput, Gear>[] = [
     {
         input: {
             name: "A",
@@ -106,7 +133,7 @@ const gear = [
             model: "B",
             type: "C"
         },
-        output: undefined
+        output: {}
     },
     {
         input: {
@@ -115,35 +142,38 @@ const gear = [
             model: "Z",
             type: "W"
         },
-        output: undefined
+        output: {}
     }
 ];
 
-const groups = [
+export const groups: TestData<CreateGroupInput, Group>[] = [
     {
         input: {
             name: "New Group",
-            text: "Hi"
+            text: "Hi",
+            participants: []
         },
-        output: undefined
+        output: {}
     },
     {
         input: {
             name: "New Group 2",
-            text: "Hi"
+            text: "Hi",
+            participants: []
         },
-        output: undefined
+        output: {}
     },
     {
         input: {
             name: "New Group 3",
-            text: "Hi"
+            text: "Hi",
+            participants: []
         },
-        output: undefined
+        output: {}
     }
 ];
 
-const saveUser = async index => {
+export const saveUser = async (index: number) => {
     const user = await prisma.mutation.createUser({
         data: users[index].input
     });
@@ -152,7 +182,11 @@ const saveUser = async index => {
     return user;
 };
 
-const saveClub = async (index, managerIds, memberIds) => {
+export const saveClub = async (
+    index: number,
+    managerIds: IdArray,
+    memberIds: IdArray
+) => {
     clubs[index].input.managers = {
         connect: managerIds
     };
@@ -169,7 +203,7 @@ const saveClub = async (index, managerIds, memberIds) => {
     return club;
 };
 
-const saveGear = async (index, ownerId) => {
+export const saveGear = async (index: number, ownerId: string) => {
     gear[index].input.owner = {
         connect: {
             id: ownerId
@@ -182,7 +216,13 @@ const saveGear = async (index, ownerId) => {
     return savedGear;
 };
 
-const saveDive = async (index, userId, clubId, buddyIds, gearIds) => {
+export const saveDive = async (
+    index: number,
+    userId: string,
+    clubId: string | null,
+    buddyIds: IdArray,
+    gearIds: IdArray
+) => {
     dives[index].input.user = {
         connect: {
             id: userId
@@ -214,7 +254,11 @@ const saveDive = async (index, userId, clubId, buddyIds, gearIds) => {
     return dive;
 };
 
-const saveGroup = async (index, myId, userIds) => {
+export const saveGroup = async (
+    index: number,
+    myId: string,
+    userIds: IdArray
+) => {
     const { input } = groups[index];
 
     const group = await prisma.mutation.createGroup({
@@ -242,7 +286,12 @@ const saveGroup = async (index, myId, userIds) => {
     return group;
 };
 
-const seedDatabase = async ({ resources = {} } = {}) => {
+export const seedDatabase = async (resources?: {
+    clubs?: boolean;
+    gear?: boolean;
+    dives?: boolean;
+    groups?: boolean;
+}): Promise<void> => {
     await prisma.mutation.deleteManyGroups();
     await prisma.mutation.deleteManyMessages();
     await prisma.mutation.deleteManyDives();
@@ -255,67 +304,60 @@ const seedDatabase = async ({ resources = {} } = {}) => {
     await saveUser(1);
     await saveUser(2);
 
-    // Example clubs
-    if (resources.clubs) {
-        await saveClub(
-            0,
-            [{ id: users[0].output.id }],
-            [{ id: users[1].output.id }]
-        );
-        await saveClub(
-            1,
-            [{ id: users[1].output.id }, { id: users[2].output.id }],
-            [{ id: users[0].output.id }]
-        );
-    }
+    if (resources) {
+        // Example clubs
+        if (resources.clubs) {
+            await saveClub(
+                0,
+                [{ id: users[0].output.id }],
+                [{ id: users[1].output.id }]
+            );
+            await saveClub(
+                1,
+                [{ id: users[1].output.id }, { id: users[2].output.id }],
+                [{ id: users[0].output.id }]
+            );
+        }
 
-    // Example gear
-    if (resources.gear) {
-        await saveGear(0, users[0].output.id);
-        await saveGear(1, users[0].output.id);
-    }
+        // Example gear
+        if (resources.gear) {
+            await saveGear(0, users[0].output.id);
+            await saveGear(1, users[0].output.id);
+        }
 
-    // Example dives
-    if (resources.dives) {
-        await saveDive(
-            0,
-            users[0].output.id,
-            clubs[0].output.id,
-            [{ id: users[1].output.id }],
-            [{ id: gear[0].output.id }]
-        );
-        await saveDive(
-            1,
-            users[0].output.id,
-            null,
-            [{ id: users[1].output.id }, { id: users[2].output.id }],
-            [{ id: gear[0].output.id }, { id: gear[1].output.id }]
-        );
-        await saveDive(2, users[0].output.id, null, [], []);
-    }
+        // Example dives
+        if (resources.dives) {
+            await saveDive(
+                0,
+                users[0].output.id,
+                clubs[0].output.id,
+                [{ id: users[1].output.id }],
+                [{ id: gear[0].output.id }]
+            );
+            await saveDive(
+                1,
+                users[0].output.id,
+                null,
+                [{ id: users[1].output.id }, { id: users[2].output.id }],
+                [{ id: gear[0].output.id }, { id: gear[1].output.id }]
+            );
+            await saveDive(2, users[0].output.id, null, [], []);
+        }
 
-    // Example groups
-    if (resources.groups) {
-        await saveGroup(0, users[0].output.id, [
-            { id: users[0].output.id },
-            { id: users[1].output.id }
-        ]);
-        await saveGroup(1, users[0].output.id, [
-            { id: users[0].output.id },
-            { id: users[1].output.id }
-        ]);
-        await saveGroup(2, users[0].output.id, [
-            { id: users[0].output.id },
-            { id: users[1].output.id }
-        ]);
+        // Example groups
+        if (resources.groups) {
+            await saveGroup(0, users[0].output.id, [
+                { id: users[0].output.id },
+                { id: users[1].output.id }
+            ]);
+            await saveGroup(1, users[0].output.id, [
+                { id: users[0].output.id },
+                { id: users[1].output.id }
+            ]);
+            await saveGroup(2, users[0].output.id, [
+                { id: users[0].output.id },
+                { id: users[1].output.id }
+            ]);
+        }
     }
-};
-
-module.exports = {
-    seedDatabase,
-    users,
-    dives,
-    clubs,
-    gear,
-    groups
 };

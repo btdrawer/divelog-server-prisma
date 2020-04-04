@@ -1,7 +1,8 @@
 import { getUserId } from "../../authentication/authUtils";
 import gearMiddleware from "../../authentication/middleware/gearMiddleware";
 import { UPDATE, DELETE } from "../../constants/methods";
-import { Gear, GearInput } from "../../types/schema";
+import { Gear } from "../../types/typeDefs";
+import { GearInput } from "../../types/inputs";
 import { Context, FieldResolver } from "../../types";
 import { GraphQLResolveInfo } from "graphql";
 

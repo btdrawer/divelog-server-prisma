@@ -11,7 +11,7 @@ import { getUserId } from "../authUtils";
 import { UPDATE, DELETE } from "../../constants/methods";
 import clubOperations from "../../constants/clubOperations";
 import { Context } from "../../types";
-import { Club } from "../../types/schema";
+import { Club } from "../../types/typeDefs";
 
 async function clubMiddleware(input: {
     method: string;

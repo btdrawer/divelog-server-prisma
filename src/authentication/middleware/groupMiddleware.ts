@@ -1,7 +1,7 @@
 import { NOT_FOUND, FORBIDDEN } from "../../constants/errorCodes";
 import { getUserId } from "../authUtils";
 import { Context } from "../../types";
-import { Group } from "../../types/schema";
+import { Group } from "../../types/typeDefs";
 
 async function groupMiddleware(input: {
     groupId: string;

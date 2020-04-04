@@ -1,6 +1,6 @@
-const { gql } = require("apollo-boost");
+import { gql, DocumentNode } from "apollo-boost";
 
-exports.createGroup = gql`
+export const createGroup: DocumentNode = gql`
     mutation($data: CreateGroupInput!) {
         createGroup(data: $data) {
             id
@@ -19,7 +19,7 @@ exports.createGroup = gql`
     }
 `;
 
-exports.getMyGroups = gql`
+export const getMyGroups: DocumentNode = gql`
     query(
         $where: GroupWhereInput
         $sortBy: GroupSortEnum
@@ -47,7 +47,7 @@ exports.getMyGroups = gql`
     }
 `;
 
-exports.renameGroup = gql`
+export const renameGroup: DocumentNode = gql`
     mutation($id: ID!, $name: String!) {
         renameGroup(id: $id, name: $name) {
             id
@@ -63,7 +63,7 @@ exports.renameGroup = gql`
     }
 `;
 
-exports.sendMessage = gql`
+export const sendMessage: DocumentNode = gql`
     mutation($id: ID!, $text: String!) {
         sendMessage(id: $id, text: $text) {
             id
@@ -82,7 +82,7 @@ exports.sendMessage = gql`
     }
 `;
 
-exports.addGroupParticipant = gql`
+export const addGroupParticipant: DocumentNode = gql`
     mutation($groupId: ID!, $memberId: ID!) {
         addGroupParticipant(groupId: $groupId, memberId: $memberId) {
             id
@@ -98,7 +98,7 @@ exports.addGroupParticipant = gql`
     }
 `;
 
-exports.leaveGroup = gql`
+export const leaveGroup: DocumentNode = gql`
     mutation($id: ID!) {
         leaveGroup(id: $id) {
             id

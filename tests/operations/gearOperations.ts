@@ -1,6 +1,6 @@
-const { gql } = require("apollo-boost");
+import { gql, DocumentNode } from "apollo-boost";
 
-exports.createGear = gql`
+export const createGear: DocumentNode = gql`
     mutation($data: GearInput!) {
         createGear(data: $data) {
             id
@@ -12,7 +12,7 @@ exports.createGear = gql`
     }
 `;
 
-exports.getGear = gql`
+export const getGear: DocumentNode = gql`
     query(
         $where: GearWhereInput
         $sortBy: GearSortEnum
@@ -36,7 +36,7 @@ exports.getGear = gql`
     }
 `;
 
-exports.updateGear = gql`
+export const updateGear: DocumentNode = gql`
     mutation($id: ID!, $data: GearInput!) {
         updateGear(id: $id, data: $data) {
             id
@@ -48,7 +48,7 @@ exports.updateGear = gql`
     }
 `;
 
-exports.deleteGear = gql`
+export const deleteGear: DocumentNode = gql`
     mutation($id: ID!) {
         deleteGear(id: $id) {
             id

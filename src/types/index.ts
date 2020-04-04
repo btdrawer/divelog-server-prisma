@@ -26,12 +26,16 @@ export interface Context {
     prisma: Prisma;
 }
 
+export type WhereField = {
+    [key: string]: any;
+};
+
 export interface QueryArgs {
-    where: object;
-    sortBy: string;
-    sortOrder: string;
-    limit: string;
-    skip: string;
+    where?: WhereField;
+    sortBy?: string;
+    sortOrder?: string;
+    limit?: string;
+    skip?: string;
 }
 
 export type FieldResolver = IFieldResolver<any, Context, GraphQLResolveInfo>;

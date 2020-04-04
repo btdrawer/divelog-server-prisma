@@ -1,30 +1,22 @@
 import { getUserId } from "../../authentication/authUtils";
-import formatQueryArgs from "../../utils/formatQueryArgs";
+import { formatQueryArgs } from "../../utils/formatQueryArgs";
 import { Context, QueryArgs, FieldResolver } from "../../types";
 import { Group } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const GroupQueries = {
-    myGroups: (
+    myGroups: async (
         parent: Group,
         args: QueryArgs,
         context: Context,
         info: GraphQLResolveInfo
-    ): FieldResolver => {
+    ): Promise<FieldResolver> => {
         const { request, prisma } = context;
         const userId = getUserId(request);
-        let where = {};
-        if (args) {
-            where = {
-                ...args.where
-            };
-        }
         return prisma.query.groups(
-            formatQueryArgs({
-                ...args,
-                where: {
-                    ...where,
-                    participants_some: userId
+            await formatQueryArgs(args, {
+                participants_some: {
+                    id: userId
                 }
             }),
             info

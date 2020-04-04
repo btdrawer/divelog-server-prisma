@@ -56,7 +56,7 @@ describe("Dives", () => {
         expect(diveExists).toEqual(true);
     });
 
-    /*test("Should fail to create dive if not logged in", async () => {
+    test("Should fail to create dive if not logged in", async () => {
         const variables = {
             data: {
                 timeIn: "2020-01-01T11:00:00",
@@ -488,5 +488,5 @@ describe("Dives", () => {
                 variables
             })
         ).rejects.toThrow();
-    });*/
+    });
 });

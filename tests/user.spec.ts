@@ -40,7 +40,7 @@ describe("Users", () => {
         expect(userExists).toEqual(true);
     });
 
-    /*test("Should fail to create new user where username has been taken", async () => {
+    test("Should fail to create new user where username has been taken", async () => {
         const variables = {
             data: {
                 name: "User 4",
@@ -259,5 +259,5 @@ describe("Users", () => {
         });
 
         expect(userExists).toBe(false);
-    });*/
+    });
 });

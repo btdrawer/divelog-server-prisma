@@ -1,12 +1,30 @@
-import { QueryArgs } from "../types";
+import { WhereField, QueryArgs } from "../types";
 
-async function formatQueryArgs(input: QueryArgs) {
+export const formatQueryArgs = async (
+    input: QueryArgs,
+    requiredWhereFields?: WhereField
+) => {
     const { where, sortBy, sortOrder, limit, skip } = input;
     const args = {
         where,
         first: limit,
         skip
     };
+    if (where && requiredWhereFields) {
+        Object.keys(where).forEach(field => {
+            if (requiredWhereFields[field]) {
+                delete where[field];
+            }
+        });
+        args.where = {
+            ...args.where,
+            ...requiredWhereFields
+        };
+    } else if (requiredWhereFields) {
+        args.where = {
+            ...requiredWhereFields
+        };
+    }
     if (sortBy && sortOrder) {
         return {
             ...args,
@@ -14,6 +32,4 @@ async function formatQueryArgs(input: QueryArgs) {
         };
     }
     return args;
-}
-
-export default formatQueryArgs;
+};

@@ -1,6 +1,6 @@
-const { gql } = require("apollo-boost");
+import { gql, DocumentNode } from "apollo-boost";
 
-exports.createDive = gql`
+export const createDive: DocumentNode = gql`
     mutation($data: CreateDiveInput!) {
         createDive(data: $data) {
             id
@@ -29,7 +29,7 @@ exports.createDive = gql`
     }
 `;
 
-exports.getDives = gql`
+export const getDives: DocumentNode = gql`
     query(
         $userId: ID!
         $where: DiveWhereInput
@@ -72,7 +72,7 @@ exports.getDives = gql`
     }
 `;
 
-exports.getMyDives = gql`
+export const getMyDives: DocumentNode = gql`
     query(
         $where: MyDiveWhereInput
         $sortBy: DiveSortEnum
@@ -113,7 +113,7 @@ exports.getMyDives = gql`
     }
 `;
 
-exports.updateDive = gql`
+export const updateDive: DocumentNode = gql`
     mutation($id: ID!, $data: UpdateDiveInput!) {
         updateDive(id: $id, data: $data) {
             id
@@ -142,7 +142,7 @@ exports.updateDive = gql`
     }
 `;
 
-exports.addGearToDive = gql`
+export const addGearToDive: DocumentNode = gql`
     mutation($diveId: ID!, $gearId: ID!) {
         addGearToDive(diveId: $diveId, gearId: $gearId) {
             id
@@ -171,7 +171,7 @@ exports.addGearToDive = gql`
     }
 `;
 
-exports.removeGearFromDive = gql`
+export const removeGearFromDive: DocumentNode = gql`
     mutation($diveId: ID!, $gearId: ID!) {
         removeGearFromDive(diveId: $diveId, gearId: $gearId) {
             id
@@ -200,7 +200,7 @@ exports.removeGearFromDive = gql`
     }
 `;
 
-exports.addBuddyToDive = gql`
+export const addBuddyToDive: DocumentNode = gql`
     mutation($diveId: ID!, $buddyId: ID!) {
         addBuddyToDive(diveId: $diveId, buddyId: $buddyId) {
             id
@@ -229,7 +229,7 @@ exports.addBuddyToDive = gql`
     }
 `;
 
-exports.removeBuddyFromDive = gql`
+export const removeBuddyFromDive: DocumentNode = gql`
     mutation($diveId: ID!, $buddyId: ID!) {
         removeBuddyFromDive(diveId: $diveId, buddyId: $buddyId) {
             id
@@ -258,7 +258,7 @@ exports.removeBuddyFromDive = gql`
     }
 `;
 
-exports.deleteDive = gql`
+export const deleteDive: DocumentNode = gql`
     mutation($id: ID!) {
         deleteDive(id: $id) {
             id

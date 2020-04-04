@@ -1,6 +1,6 @@
-const { gql } = require("apollo-server");
+import { gql, DocumentNode } from "apollo-boost";
 
-exports.createUser = gql`
+export const createUser: DocumentNode = gql`
     mutation($data: CreateUserInput!) {
         createUser(data: $data) {
             user {
@@ -14,7 +14,7 @@ exports.createUser = gql`
     }
 `;
 
-exports.login = gql`
+export const login: DocumentNode = gql`
     mutation($username: String!, $password: String!) {
         login(username: $username, password: $password) {
             user {
@@ -28,7 +28,7 @@ exports.login = gql`
     }
 `;
 
-exports.getUsers = gql`
+export const getUsers: DocumentNode = gql`
     query(
         $where: UserWhereInput
         $sortBy: UserSortEnum
@@ -51,7 +51,7 @@ exports.getUsers = gql`
     }
 `;
 
-exports.getMe = gql`
+export const getMe: DocumentNode = gql`
     query {
         me {
             id
@@ -62,7 +62,7 @@ exports.getMe = gql`
     }
 `;
 
-exports.updateUser = gql`
+export const updateUser: DocumentNode = gql`
     mutation($data: UpdateUserInput!) {
         updateUser(data: $data) {
             id
@@ -73,7 +73,7 @@ exports.updateUser = gql`
     }
 `;
 
-exports.deleteUser = gql`
+export const deleteUser: DocumentNode = gql`
     mutation {
         deleteUser {
             id

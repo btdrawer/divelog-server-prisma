@@ -1,6 +1,6 @@
-const { gql } = require("apollo-boost");
+import { gql, DocumentNode } from "apollo-boost";
 
-exports.createClub = gql`
+export const createClub: DocumentNode = gql`
     mutation($data: CreateClubInput!) {
         createClub(data: $data) {
             id
@@ -17,7 +17,7 @@ exports.createClub = gql`
     }
 `;
 
-exports.getClubs = gql`
+export const getClubs: DocumentNode = gql`
     query(
         $where: ClubWhereInput
         $sortBy: ClubSortEnum
@@ -46,7 +46,7 @@ exports.getClubs = gql`
     }
 `;
 
-exports.updateClub = gql`
+export const updateClub: DocumentNode = gql`
     mutation($id: ID!, $data: UpdateClubInput!) {
         updateClub(id: $id, data: $data) {
             id
@@ -63,7 +63,7 @@ exports.updateClub = gql`
     }
 `;
 
-exports.addClubManager = gql`
+export const addClubManager: DocumentNode = gql`
     mutation($clubId: ID!, $userId: ID!) {
         addClubManager(clubId: $clubId, userId: $userId) {
             id
@@ -80,7 +80,7 @@ exports.addClubManager = gql`
     }
 `;
 
-exports.removeClubManager = gql`
+export const removeClubManager: DocumentNode = gql`
     mutation($clubId: ID!, $managerId: ID!) {
         removeClubManager(clubId: $clubId, managerId: $managerId) {
             id
@@ -97,7 +97,7 @@ exports.removeClubManager = gql`
     }
 `;
 
-exports.joinClub = gql`
+export const joinClub: DocumentNode = gql`
     mutation($id: ID!) {
         joinClub(id: $id) {
             id
@@ -114,7 +114,7 @@ exports.joinClub = gql`
     }
 `;
 
-exports.leaveClub = gql`
+export const leaveClub: DocumentNode = gql`
     mutation($id: ID!) {
         leaveClub(id: $id) {
             id
@@ -131,7 +131,7 @@ exports.leaveClub = gql`
     }
 `;
 
-exports.removeClubMember = gql`
+export const removeClubMember: DocumentNode = gql`
     mutation($clubId: ID!, $memberId: ID!) {
         removeClubMember(clubId: $clubId, memberId: $memberId) {
             id
@@ -148,7 +148,7 @@ exports.removeClubMember = gql`
     }
 `;
 
-exports.deleteClub = gql`
+export const deleteClub: DocumentNode = gql`
     mutation($id: ID!) {
         deleteClub(id: $id) {
             id

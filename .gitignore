@@ -1,7 +1,9 @@
 node_modules
+built
+
 *.env
 *.DS_Store
 
+prisma/generated
 prisma/docker-compose.yml
 prisma/prisma.yml
-prisma/generated

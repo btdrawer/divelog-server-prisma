@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "allowJs": true,
+        "target": "es6",
+        "module": "CommonJS",
+        "strict": true,
+        "alwaysStrict": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "esModuleInterop": true
+    },
+    "include": [
+        "./src/**/*",
+        "./tests/operations/**/*",
+        "./tests/setup/**/*",
+        "./tests/utils/**/*"
+    ]
+}

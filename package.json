@@ -3,29 +3,29 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "start": "env-cmd -f ./config/.env nodemon src/app.js",
+        "start": "tsc && env-cmd -f ./config/.env node built/app.js",
+        "start:nocompile": "env-cmd -f ./config/.env node built/app.js",
         "get-schema": "graphql get-schema -p prisma --dotenv ./config/.env",
         "lint": "eslint --fix .",
         "test": "env-cmd -f ./config/.test.env jest --runInBand",
         "test:watch": "env-cmd -f ./config/.test.env jest --runInBand --watch"
     },
-    "jest": {
-        "globalSetup": "./tests/setup/globalSetup.js",
-        "globalTeardown": "./tests/setup/globalTeardown.js",
-        "testEnvironment": "node"
-    },
     "dependencies": {
         "apollo-server": "^2.11.0",
         "bcrypt": "^4.0.1",
+        "dotenv": "^8.2.0",
         "env-cmd": "^10.0.1",
         "graphql-import": "^1.0.1",
         "graphql-tools": "^4.0.7",
         "jsonwebtoken": "^8.5.1",
         "moment": "^2.24.0",
-        "nodemon": "^1.19.2",
         "prisma-binding": "^2.3.16"
     },
     "devDependencies": {
+        "@types/bcrypt": "^3.0.0",
+        "@types/jest": "^25.2.1",
+        "@types/jsonwebtoken": "^8.3.8",
+        "@types/node": "^13.9.8",
         "apollo-boost": "^0.4.7",
         "eslint": "^6.8.0",
         "eslint-config-prettier": "^6.10.0",
@@ -35,6 +35,7 @@
         "jest": "^25.2.3",
         "node-fetch": "^2.6.0",
         "prettier": "^1.19.1",
+        "ts-jest": "^25.3.1",
         "typescript": "^3.8.3"
     }
 }

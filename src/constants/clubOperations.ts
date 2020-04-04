@@ -1,0 +1,9 @@
+const clubOperations = {
+    ADD_CLUB_MANAGER: "ADD_CLUB_MANAGER",
+    REMOVE_CLUB_MANAGER: "REMOVE_CLUB_MEMBER",
+    JOIN_CLUB: "JOIN_CLUB",
+    LEAVE_CLUB: "LEAVE_CLUB",
+    REMOVE_CLUB_MEMBER: "REMOVE_CLUB_MEMBER"
+};
+
+export default clubOperations;

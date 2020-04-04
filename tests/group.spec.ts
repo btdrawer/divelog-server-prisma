@@ -50,7 +50,7 @@ describe("Groups", () => {
         expect(groupExists).toEqual(true);
     });
 
-    /*test("Should fail to create a new group if not logged in", async () => {
+    test("Should fail to create a new group if not logged in", async () => {
         const variables = {
             data: {
                 name: "New Group 1",
@@ -240,7 +240,7 @@ describe("Groups", () => {
 
         await expect(
             authenticatedClient.mutate({
-                mutate: sendMessage,
+                mutation: sendMessage,
                 variables
             })
         ).rejects.toThrow();
@@ -289,7 +289,7 @@ describe("Groups", () => {
 
         await expect(
             authenticatedClient.mutate({
-                mutate: addGroupParticipant,
+                mutation: addGroupParticipant,
                 variables
             })
         ).rejects.toThrow();
@@ -333,7 +333,7 @@ describe("Groups", () => {
 
         await expect(
             authenticatedClient.mutate({
-                mutate: leaveGroup,
+                mutation: leaveGroup,
                 variables
             })
         ).rejects.toThrow();
@@ -350,5 +350,5 @@ describe("Groups", () => {
                 variables
             })
         ).rejects.toThrow();
-    });*/
+    });
 });

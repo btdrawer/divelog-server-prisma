@@ -47,7 +47,7 @@ describe("Gear", () => {
         expect(gearExists).toEqual(true);
     });
 
-    /*test("Should fail to create gear if not logged in", async () => {
+    test("Should fail to create gear if not logged in", async () => {
         const variables = {
             data: {
                 name: "B",
@@ -268,5 +268,5 @@ describe("Gear", () => {
                 variables
             })
         ).rejects.toThrow();
-    });*/
+    });
 });

@@ -11,7 +11,7 @@ import { getUserId } from "../authUtils";
 import { UPDATE, DELETE } from "../../constants/methods";
 import clubOperations from "../../constants/clubOperations";
 import { Context } from "../../types";
-import { Club } from "../../types/typeDefs";
+import { User } from "../../types/typeDefs";
 
 async function clubMiddleware(input: {
     method: string;
@@ -41,7 +41,7 @@ async function clubMiddleware(input: {
             throw new Error(NOT_FOUND);
         }
         if (
-            !club.managers.some((club: Club) => club.id === userId) &&
+            !club.managers.some((manager: User) => manager.id === userId) &&
             operation !== clubOperations.JOIN_CLUB &&
             operation !== clubOperations.LEAVE_CLUB
         ) {
@@ -51,7 +51,9 @@ async function clubMiddleware(input: {
             switch (operation) {
                 case clubOperations.ADD_CLUB_MANAGER:
                     if (
-                        club.managers.some((club: Club) => club.id === opUserId)
+                        club.managers.some(
+                            (manager: User) => manager.id === opUserId
+                        )
                     ) {
                         throw new Error(ALREADY_A_MANAGER);
                     }
@@ -59,7 +61,7 @@ async function clubMiddleware(input: {
                 case clubOperations.REMOVE_CLUB_MANAGER:
                     if (
                         !club.managers.some(
-                            (club: Club) => club.id === opUserId
+                            (manager: User) => manager.id === opUserId
                         )
                     ) {
                         throw new Error(NOT_A_MANAGER);
@@ -69,20 +71,28 @@ async function clubMiddleware(input: {
                     }
                     break;
                 case clubOperations.JOIN_CLUB:
-                    if (club.members.some((club: Club) => club.id === userId)) {
+                    if (
+                        club.members.some(
+                            (member: User) => member.id === userId
+                        )
+                    ) {
                         throw new Error(ALREADY_A_MEMBER);
                     }
                     break;
                 case clubOperations.LEAVE_CLUB:
                     if (
-                        !club.members.some((club: Club) => club.id === userId)
+                        !club.members.some(
+                            (member: User) => member.id === userId
+                        )
                     ) {
                         throw new Error(NOT_A_MEMBER);
                     }
                     break;
                 case clubOperations.REMOVE_CLUB_MEMBER:
                     if (
-                        !club.members.some((club: Club) => club.id === opUserId)
+                        !club.members.some(
+                            (member: User) => member.id === opUserId
+                        )
                     ) {
                         throw new Error(NOT_A_MEMBER);
                     }

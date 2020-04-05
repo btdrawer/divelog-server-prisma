@@ -5,8 +5,8 @@ import {
     updateGear,
     deleteGear
 } from "./operations/gearOperations";
-import { getClient } from "./utils/getClient";
-import { prisma } from "../src/prisma";
+import getClient from "./utils/getClient";
+import prisma from "../src/prisma";
 
 const client = getClient();
 

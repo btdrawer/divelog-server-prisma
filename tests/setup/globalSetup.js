@@ -1,4 +1,4 @@
-const { server } = require("../../src/server");
+const server = require("../../src/server").default;
 
 module.exports = async () => {
     global.httpServer = server();

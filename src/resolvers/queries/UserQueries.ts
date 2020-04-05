@@ -17,7 +17,7 @@ export const UserQueries = {
         args: QueryArgs,
         context: Context,
         info: GraphQLResolveInfo
-    ): FieldResolver => {
+    ): Promise<FieldResolver> => {
         const { request, prisma } = context;
         const userId = getUserId(request);
         return prisma.query.user(

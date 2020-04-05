@@ -1,3 +1,2 @@
-export function newMessageSubscriptionKey(id: string) {
-    return `NEW_MESSAGE_${id}`;
-}
+export const newMessageSubscriptionKey = (id: string): string =>
+    `NEW_MESSAGE_${id}`;

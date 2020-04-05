@@ -3,7 +3,7 @@ import { WhereField, QueryArgs } from "../types";
 export const formatQueryArgs = async (
     input: QueryArgs,
     requiredWhereFields?: WhereField
-) => {
+): Promise<object> => {
     const { where, sortBy, sortOrder, limit, skip } = input;
     const args = {
         where,

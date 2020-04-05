@@ -4,11 +4,11 @@ import { Club } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const ClubQueries = {
-    clubs: async (
+    clubs: (
         parent: Club,
         args: QueryArgs,
         context: Context,
         info: GraphQLResolveInfo
     ): Promise<FieldResolver> =>
-        context.prisma.query.clubs(await formatQueryArgs(args), info)
+        context.prisma.query.clubs(formatQueryArgs(args), info)
 };

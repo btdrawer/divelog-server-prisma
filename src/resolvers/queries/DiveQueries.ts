@@ -5,14 +5,14 @@ import { Dive } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const DiveQueries = {
-    dives: async (
+    dives: (
         parent: Dive,
         args: any,
         context: Context,
         info: GraphQLResolveInfo
     ): Promise<FieldResolver> =>
         context.prisma.query.dives(
-            await formatQueryArgs(args, {
+            formatQueryArgs(args, {
                 public: true,
                 user: {
                     id: args.userId
@@ -20,7 +20,7 @@ export const DiveQueries = {
             }),
             info
         ),
-    myDives: async (
+    myDives: (
         parent: Dive,
         args: QueryArgs,
         context: Context,
@@ -29,7 +29,7 @@ export const DiveQueries = {
         const { request, prisma } = context;
         const userId = getUserId(request);
         return prisma.query.dives(
-            await formatQueryArgs(args, {
+            formatQueryArgs(args, {
                 user: {
                     id: userId
                 }

@@ -5,13 +5,13 @@ import { User } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const UserQueries = {
-    users: async (
+    users: (
         parent: any,
         args: QueryArgs,
         context: Context,
         info: GraphQLResolveInfo
     ): Promise<FieldResolver> =>
-        context.prisma.query.users(await formatQueryArgs(args), info),
+        context.prisma.query.users(formatQueryArgs(args), info),
     me: (
         parent: User,
         args: QueryArgs,

@@ -5,7 +5,7 @@ import { Group } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const GroupQueries = {
-    myGroups: async (
+    myGroups: (
         parent: Group,
         args: QueryArgs,
         context: Context,
@@ -14,7 +14,7 @@ export const GroupQueries = {
         const { request, prisma } = context;
         const userId = getUserId(request);
         return prisma.query.groups(
-            await formatQueryArgs(args, {
+            formatQueryArgs(args, {
                 participants_some: {
                     id: userId
                 }

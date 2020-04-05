@@ -5,7 +5,7 @@ import { Gear } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
 
 export const GearQueries = {
-    gear: async (
+    gear: (
         parent: Gear,
         args: QueryArgs,
         context: Context,
@@ -14,7 +14,7 @@ export const GearQueries = {
         const { request, prisma } = context;
         const userId = getUserId(request);
         return prisma.query.gears(
-            await formatQueryArgs(args, {
+            formatQueryArgs(args, {
                 owner: {
                     id: userId
                 }

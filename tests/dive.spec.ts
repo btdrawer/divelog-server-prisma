@@ -10,8 +10,8 @@ import {
     removeBuddyFromDive,
     deleteDive
 } from "./operations/diveOperations";
-import { getClient } from "./utils/getClient";
-import { prisma } from "../src/prisma";
+import getClient from "./utils/getClient";
+import prisma from "../src/prisma";
 
 const client = getClient();
 

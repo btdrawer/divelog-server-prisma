@@ -3,11 +3,11 @@ import { NOT_FOUND, FORBIDDEN } from "../../constants/errorCodes";
 import { UPDATE, DELETE } from "../../constants/methods";
 import { Context } from "../../types";
 
-async function diveMiddleware(input: {
+const diveMiddleware = async (input: {
     method: string;
     diveId: string;
     context: Context;
-}) {
+}) => {
     const {
         method,
         diveId,
@@ -31,6 +31,6 @@ async function diveMiddleware(input: {
         }
     }
     return undefined;
-}
+};
 
 export default diveMiddleware;

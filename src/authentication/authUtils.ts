@@ -6,11 +6,14 @@ import { config } from "dotenv";
 
 config();
 
-export function getAuthData(
+export const getAuthData = (
     req: Request,
     isSubscription: boolean = false,
     authIsRequired: boolean = true
-) {
+): {
+    token: string;
+    data: string | object;
+} | null => {
     const header = isSubscription
         ? req.connection.context.Authorization
         : req.req.headers.authorization;
@@ -24,23 +27,21 @@ export function getAuthData(
     }
 
     return null;
-}
+};
 
-export function getUserId(
+export const getUserId = (
     req: Request,
     isSubscription: boolean = false,
     authIsRequired: boolean = true
-) {
+): string => {
     const authData: any = getAuthData(req, isSubscription, authIsRequired);
     return authData ? authData.data.id : null;
-}
+};
 
-export function signJwt(id: string) {
-    return jwt.sign({ id }, <string>process.env.JWT_KEY, {
+export const signJwt = (id: string): string =>
+    jwt.sign({ id }, <string>process.env.JWT_KEY, {
         expiresIn: "3h"
     });
-}
 
-export function hashPassword(password: string) {
-    return bcrypt.hashSync(password, 10);
-}
+export const hashPassword = (password: string): string =>
+    bcrypt.hashSync(password, 10);

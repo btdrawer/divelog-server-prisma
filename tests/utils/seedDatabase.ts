@@ -1,4 +1,4 @@
-import { prisma } from "../../src/prisma";
+import prisma from "../../src/prisma";
 import { signJwt, hashPassword } from "../../src/authentication/authUtils";
 import {
     AuthPayload,

@@ -3,11 +3,11 @@ import { getUserId } from "../authUtils";
 import { UPDATE, DELETE } from "../../constants/methods";
 import { Context } from "../../types";
 
-async function gearMiddleware(input: {
+const gearMiddleware = async (input: {
     method: string;
     gearId: string;
     context: Context;
-}) {
+}) => {
     const {
         method,
         gearId,
@@ -26,6 +26,6 @@ async function gearMiddleware(input: {
         }
     }
     return undefined;
-}
+};
 
 export default gearMiddleware;

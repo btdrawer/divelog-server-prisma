@@ -65,7 +65,7 @@ export const UserMutations = {
         args: { data: UpdateUserInput },
         context: Context,
         info: GraphQLResolveInfo
-    ): FieldResolver => {
+    ): Promise<FieldResolver> => {
         const { request, prisma } = context;
         const userId = getUserId(request);
         return prisma.mutation.updateUser(

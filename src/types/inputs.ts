@@ -24,7 +24,7 @@ export interface UpdateUserInput extends Input {
     password?: string;
 }
 
-export interface CreateDiveInput extends Input {
+export interface MutateDiveInput extends Input {
     timeIn?: string | any;
     timeOut?: string | any;
     bottomTime?: number;
@@ -33,23 +33,16 @@ export interface CreateDiveInput extends Input {
     location?: string;
     description?: string;
     club?: string | object;
-    buddies?: ConnectInput;
-    gear?: ConnectInput;
-    user?: ConnectInput;
     public?: boolean;
 }
 
-export interface UpdateDiveInput extends Input {
-    timeIn?: string | any;
-    timeOut?: string | any;
-    bottomTime?: number;
-    safetyStopTime?: number;
-    maxDepth?: number;
-    location?: string;
-    description?: string;
-    club?: string | object;
-    public?: boolean;
+export interface CreateDiveInput extends MutateDiveInput {
+    buddies?: ConnectInput;
+    gear?: ConnectInput;
+    user?: ConnectInput;
 }
+
+export interface UpdateDiveInput extends MutateDiveInput {}
 
 export interface CreateClubInput extends Input {
     name: string;

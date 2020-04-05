@@ -4,10 +4,14 @@ import { UPDATE, DELETE } from "../../constants/methods";
 import moment from "moment";
 import { Context, FieldResolver } from "../../types";
 import { Dive } from "../../types/typeDefs";
-import { CreateDiveInput, UpdateDiveInput } from "../../types/inputs";
+import {
+    MutateDiveInput,
+    CreateDiveInput,
+    UpdateDiveInput
+} from "../../types/inputs";
 import { GraphQLResolveInfo } from "graphql";
 
-const processTime = (data: CreateDiveInput | UpdateDiveInput) => {
+const processTime = (data: MutateDiveInput): object => {
     let { timeIn, timeOut } = data;
     let diveTime: number = 0;
     if (timeIn) {

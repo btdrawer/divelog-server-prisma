@@ -1,5 +1,6 @@
 import { GraphQLResolveInfo } from "graphql";
 import { IFieldResolver } from "graphql-tools";
+import { Prisma } from "prisma-binding";
 
 export interface Request {
     connection: {
@@ -12,13 +13,6 @@ export interface Request {
             authorization: string;
         };
     };
-}
-
-export interface Prisma {
-    query: any;
-    mutation: any;
-    subscription: any;
-    exists: any;
 }
 
 export interface Context {

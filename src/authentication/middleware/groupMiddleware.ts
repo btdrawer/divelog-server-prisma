@@ -3,11 +3,11 @@ import { getUserId } from "../authUtils";
 import { Context } from "../../types";
 import { Group } from "../../types/typeDefs";
 
-async function groupMiddleware(input: {
+const groupMiddleware = async (input: {
     groupId: string;
     context: Context;
     isSubscription?: boolean;
-}) {
+}) => {
     const {
         groupId,
         context: { request, prisma },
@@ -29,6 +29,6 @@ async function groupMiddleware(input: {
         throw new Error(FORBIDDEN);
     }
     return undefined;
-}
+};
 
 export default groupMiddleware;

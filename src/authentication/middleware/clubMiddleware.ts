@@ -13,13 +13,13 @@ import clubOperations from "../../constants/clubOperations";
 import { Context } from "../../types";
 import { User } from "../../types/typeDefs";
 
-async function clubMiddleware(input: {
+const clubMiddleware = async (input: {
     method: string;
     clubId: string;
     context: Context;
     operation?: string;
     opUserId?: string;
-}) {
+}) => {
     const {
         method,
         clubId,
@@ -103,6 +103,6 @@ async function clubMiddleware(input: {
         }
     }
     return undefined;
-}
+};
 
 export default clubMiddleware;

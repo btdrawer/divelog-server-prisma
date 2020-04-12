@@ -1,19 +1,19 @@
-import {
-    getUserId,
-    signJwt,
-    hashPassword
-} from "../../authentication/authUtils";
+import { GraphQLResolveInfo } from "graphql";
+import { combineResolvers } from "graphql-resolvers";
+import * as bcrypt from "bcrypt";
+
+import { signJwt, hashPassword } from "../../utils/authUtils";
 import {
     INVALID_AUTH,
     CANNOT_ADD_YOURSELF,
     FRIEND_REQUEST_ALREADY_SENT,
     ALREADY_FRIENDS
 } from "../../constants/errorCodes";
-import * as bcrypt from "bcrypt";
+
 import { Context, FieldResolver } from "../../types";
 import { User, Club } from "../../types/typeDefs";
-import { GraphQLResolveInfo } from "graphql";
-import { CreateUserInput, UpdateUserInput } from "../../types/inputs";
+
+import { isAuthenticated } from "../middleware";
 
 const formatAuthPayload = (user: User, token: string): any => ({
     user: {
@@ -28,9 +28,9 @@ const formatAuthPayload = (user: User, token: string): any => ({
 export const UserMutations = {
     createUser: async (
         parent: User,
-        args: { data: CreateUserInput },
+        args: any,
         context: Context
-    ): Promise<any> => {
+    ): Promise<FieldResolver> => {
         const { data } = args;
         data.password = hashPassword(data.password);
         const user = await context.prisma.mutation.createUser({
@@ -43,7 +43,7 @@ export const UserMutations = {
         parent: User,
         args: { username: string; password: string },
         context: Context
-    ): Promise<any> => {
+    ): Promise<FieldResolver> => {
         const { username, password } = args;
         const user = await context.prisma.query.user({
             where: {
@@ -60,60 +60,95 @@ export const UserMutations = {
         const token = signJwt(user.id);
         return formatAuthPayload(user, token);
     },
-    updateUser: (
-        parent: User,
-        args: { data: UpdateUserInput },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { request, prisma } = context;
-        const userId = getUserId(request);
-        return prisma.mutation.updateUser(
-            {
-                where: {
-                    id: userId
+    updateUser: combineResolvers(
+        isAuthenticated,
+        async (
+            parent: User,
+            args: any,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.mutation.updateUser(
+                {
+                    where: {
+                        id: context.authUserId
+                    },
+                    data: args.data
                 },
-                data: args.data
-            },
-            info
-        );
-    },
-    sendOrAcceptFriendRequest: async (
-        parent: User,
-        args: { id: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { id } = args;
-        const { request, prisma } = context;
-        const myId = getUserId(request);
-        if (id === myId) {
-            throw new Error(CANNOT_ADD_YOURSELF);
-        }
-        const checkInbox = await prisma.query.user({
-            where: {
-                id: myId
+                info
+            )
+    ),
+    sendOrAcceptFriendRequest: combineResolvers(
+        isAuthenticated,
+        async (
+            parent: User,
+            args: any,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { id } = args;
+            const { authUserId, prisma } = context;
+            if (id === authUserId) {
+                throw new Error(CANNOT_ADD_YOURSELF);
             }
-        });
-        if (checkInbox.friendRequestsSent.includes(id)) {
-            throw new Error(FRIEND_REQUEST_ALREADY_SENT);
-        } else if (checkInbox.friends.includes(id)) {
-            throw new Error(ALREADY_FRIENDS);
-        } else if (checkInbox.friendRequestsInbox.includes(id)) {
-            // Accept request
+            const checkInbox = await prisma.query.user({
+                where: {
+                    id: authUserId
+                }
+            });
+            if (checkInbox.friendRequestsSent.includes(id)) {
+                throw new Error(FRIEND_REQUEST_ALREADY_SENT);
+            } else if (checkInbox.friends.includes(id)) {
+                throw new Error(ALREADY_FRIENDS);
+            } else if (checkInbox.friendRequestsInbox.includes(id)) {
+                // Accept request
+                await prisma.mutation.updateUser({
+                    where: {
+                        id
+                    },
+                    data: {
+                        friends: {
+                            connect: {
+                                id: authUserId
+                            }
+                        },
+                        friendRequestsInbox: {
+                            disconnect: {
+                                id: authUserId
+                            }
+                        }
+                    }
+                });
+                return prisma.mutation.updateUser(
+                    {
+                        where: {
+                            id: authUserId
+                        },
+                        data: {
+                            friends: {
+                                connect: {
+                                    id
+                                }
+                            },
+                            friendRequestsSent: {
+                                disconnect: {
+                                    id
+                                }
+                            }
+                        }
+                    },
+                    info
+                );
+            }
+            // Send request
             await prisma.mutation.updateUser({
                 where: {
                     id
                 },
                 data: {
-                    friends: {
-                        connect: {
-                            id: myId
-                        }
-                    },
                     friendRequestsInbox: {
-                        disconnect: {
-                            id: myId
+                        connect: {
+                            id: authUserId
                         }
                     }
                 }
@@ -121,15 +156,49 @@ export const UserMutations = {
             return prisma.mutation.updateUser(
                 {
                     where: {
-                        id: myId
+                        id: authUserId
                     },
                     data: {
-                        friends: {
+                        friendRequestsSent: {
                             connect: {
                                 id
                             }
-                        },
-                        friendRequestsSent: {
+                        }
+                    }
+                },
+                info
+            );
+        }
+    ),
+    unfriend: combineResolvers(
+        isAuthenticated,
+        async (
+            parent: User,
+            args: any,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { id } = args;
+            const { authUserId, prisma } = context;
+            await prisma.mutation.updateUser({
+                where: {
+                    id
+                },
+                data: {
+                    friends: {
+                        disconnect: {
+                            id: authUserId
+                        }
+                    }
+                }
+            });
+            return prisma.mutation.updateUser(
+                {
+                    where: {
+                        id: authUserId
+                    },
+                    data: {
+                        friends: {
                             disconnect: {
                                 id
                             }
@@ -139,106 +208,47 @@ export const UserMutations = {
                 info
             );
         }
-        // Send request
-        await prisma.mutation.updateUser({
-            where: {
-                id
-            },
-            data: {
-                friendRequestsInbox: {
-                    connect: {
-                        id: myId
+    ),
+    deleteUser: combineResolvers(
+        isAuthenticated,
+        async (
+            parent: User,
+            args: any,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { authUserId, prisma } = context;
+            await Promise.all([
+                prisma.mutation.deleteManyGears({
+                    owner: {
+                        id: authUserId
                     }
-                }
-            }
-        });
-        return prisma.mutation.updateUser(
-            {
-                where: {
-                    id: myId
+                }),
+                prisma.mutation.deleteManyDives({
+                    user: {
+                        id: authUserId
+                    }
+                })
+            ]);
+            const user = await prisma.mutation.deleteUser(
+                {
+                    where: {
+                        id: authUserId
+                    }
                 },
-                data: {
-                    friendRequestsSent: {
-                        connect: {
-                            id
-                        }
+                info
+            );
+            const { managerOfClubs } = user;
+            if (managerOfClubs && managerOfClubs.length > 0) {
+                managerOfClubs.forEach(async (club: Club) => {
+                    if (club.managers.length < 2) {
+                        await prisma.mutation.deleteClub({
+                            id: club.id
+                        });
                     }
-                }
-            },
-            info
-        );
-    },
-    unfriend: async (
-        parent: User,
-        args: { id: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { id } = args;
-        const { request, prisma } = context;
-        const myId = getUserId(request);
-        await prisma.mutation.updateUser({
-            where: {
-                id
-            },
-            data: {
-                friends: {
-                    disconnect: {
-                        id: myId
-                    }
-                }
+                });
             }
-        });
-        return prisma.mutation.updateUser(
-            {
-                where: {
-                    id: myId
-                },
-                data: {
-                    friends: {
-                        disconnect: {
-                            id
-                        }
-                    }
-                }
-            },
-            info
-        );
-    },
-    deleteUser: async (
-        parent: User,
-        args: object,
-        context: Context
-    ): Promise<FieldResolver> => {
-        const { request, prisma } = context;
-        const userId = getUserId(request);
-        await Promise.all([
-            prisma.mutation.deleteManyGears({
-                owner: {
-                    id: userId
-                }
-            }),
-            prisma.mutation.deleteManyDives({
-                user: {
-                    id: userId
-                }
-            })
-        ]);
-        const user = await prisma.mutation.deleteUser({
-            where: {
-                id: userId
-            }
-        });
-        const { managerOfClubs } = user;
-        if (managerOfClubs && managerOfClubs.length > 0) {
-            managerOfClubs.forEach(async (club: Club) => {
-                if (club.managers.length < 2) {
-                    await prisma.mutation.deleteClub({
-                        id: club.id
-                    });
-                }
-            });
+            return user;
         }
-        return user;
-    }
+    )
 };

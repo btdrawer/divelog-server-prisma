@@ -64,8 +64,8 @@ export const updateClub: DocumentNode = gql`
 `;
 
 export const addClubManager: DocumentNode = gql`
-    mutation($clubId: ID!, $userId: ID!) {
-        addClubManager(clubId: $clubId, userId: $userId) {
+    mutation($id: ID!, $userId: ID!) {
+        addClubManager(id: $id, userId: $userId) {
             id
             name
             location
@@ -81,8 +81,8 @@ export const addClubManager: DocumentNode = gql`
 `;
 
 export const removeClubManager: DocumentNode = gql`
-    mutation($clubId: ID!, $managerId: ID!) {
-        removeClubManager(clubId: $clubId, managerId: $managerId) {
+    mutation($id: ID!, $userId: ID!) {
+        removeClubManager(id: $id, userId: $userId) {
             id
             name
             location
@@ -132,8 +132,8 @@ export const leaveClub: DocumentNode = gql`
 `;
 
 export const removeClubMember: DocumentNode = gql`
-    mutation($clubId: ID!, $memberId: ID!) {
-        removeClubMember(clubId: $clubId, memberId: $memberId) {
+    mutation($id: ID!, $userId: ID!) {
+        removeClubMember(id: $id, userId: $userId) {
             id
             name
             location

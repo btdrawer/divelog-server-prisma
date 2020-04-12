@@ -1,15 +1,5 @@
 export interface Input {}
 
-export type ConnectInput = {
-    connect:
-        | {
-              id: string;
-          }
-        | {
-              id: string;
-          }[];
-};
-
 export interface CreateUserInput extends Input {
     name: string;
     username: string;
@@ -52,6 +42,12 @@ export interface CreateClubInput extends Input {
     website?: string;
 }
 
+export interface UpdateClubInput extends Input {
+    name?: string;
+    location?: string;
+    website?: string;
+}
+
 export interface GearInput extends Input {
     name?: string;
     brand?: string;
@@ -65,3 +61,13 @@ export interface CreateGroupInput extends Input {
     participants: string[];
     text: string;
 }
+
+export type ConnectInput = {
+    connect:
+        | {
+              id: string;
+          }
+        | {
+              id: string;
+          }[];
+};

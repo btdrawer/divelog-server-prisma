@@ -1,227 +1,298 @@
-import { getUserId } from "../../authentication/authUtils";
-import clubMiddleware from "../../authentication/middleware/clubMiddleware";
-import { UPDATE, DELETE } from "../../constants/methods";
-import clubOperations from "../../constants/clubOperations";
-import { Context, FieldResolver } from "../../types";
-import { Club } from "../../types/typeDefs";
 import { GraphQLResolveInfo } from "graphql";
+import { combineResolvers } from "graphql-resolvers";
+
+import { isAuthenticated } from "../middleware";
+import { isClubManager, isClubMember } from "../middleware/clubMiddleware";
+
+import { Context, FieldResolver } from "../../types";
+import { Club, User } from "../../types/typeDefs";
+import { CreateClubInput, UpdateClubInput } from "../../types/inputs";
+
+const {
+    ALREADY_A_MANAGER,
+    NOT_A_MANAGER,
+    ALREADY_A_MEMBER,
+    NOT_A_MEMBER
+} = require("../../constants/errorCodes");
 
 export const ClubMutations = {
-    createClub: async (
-        parent: Club,
-        args: { data: object },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { request, prisma } = context;
-        const userId = getUserId(request);
-        return prisma.mutation.createClub(
-            {
-                data: {
-                    ...args.data,
-                    managers: {
-                        connect: {
-                            id: userId
+    createClub: combineResolvers(
+        isAuthenticated,
+        async (
+            parent: Club,
+            args: {
+                data: CreateClubInput;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { authUserId, prisma } = context;
+            return prisma.mutation.createClub(
+                {
+                    data: {
+                        ...args.data,
+                        managers: {
+                            connect: {
+                                id: authUserId
+                            }
                         }
                     }
-                }
-            },
-            info
-        );
-    },
-    updateClub: async (
-        parent: Club,
-        args: { id: string; data: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { id, data } = args;
-        await clubMiddleware({
-            method: UPDATE,
-            clubId: args.id,
-            context
-        });
-        return context.prisma.mutation.updateClub(
-            {
-                where: {
-                    id
                 },
-                data
+                info
+            );
+        }
+    ),
+    updateClub: combineResolvers(
+        isAuthenticated,
+        isClubManager,
+        async (
+            parent: Club,
+            args: {
+                id: string;
+                data: UpdateClubInput;
             },
-            info
-        );
-    },
-    addClubManager: async (
-        parent: Club,
-        args: { clubId: string; userId: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { clubId, userId } = args;
-        await clubMiddleware({
-            method: UPDATE,
-            clubId,
-            context,
-            operation: clubOperations.ADD_CLUB_MANAGER,
-            opUserId: userId
-        });
-        return context.prisma.mutation.updateClub(
-            {
-                where: {
-                    id: clubId
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { id, data } = args;
+            return context.prisma.mutation.updateClub(
+                {
+                    where: {
+                        id
+                    },
+                    data
                 },
-                data: {
-                    managers: {
-                        connect: {
-                            id: userId
+                info
+            );
+        }
+    ),
+    addClubManager: combineResolvers(
+        isAuthenticated,
+        isClubManager,
+        async (
+            parent: Club,
+            args: {
+                id: string;
+                userId: string;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { id, userId } = args;
+            const { prisma } = context;
+            const club = await prisma.query.club(
+                {
+                    where: {
+                        id
+                    }
+                },
+                "{ id managers { id } }"
+            );
+            if (club.managers.some((manager: User) => manager.id === userId)) {
+                throw new Error(ALREADY_A_MANAGER);
+            }
+            return prisma.mutation.updateClub(
+                {
+                    where: {
+                        id
+                    },
+                    data: {
+                        managers: {
+                            connect: {
+                                id: userId
+                            }
                         }
                     }
-                }
-            },
-            info
-        );
-    },
-    removeClubManager: async (
-        parent: Club,
-        args: { clubId: string; managerId: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { clubId, managerId } = args;
-        await clubMiddleware({
-            method: UPDATE,
-            clubId,
-            context,
-            operation: clubOperations.REMOVE_CLUB_MANAGER,
-            opUserId: managerId
-        });
-        return context.prisma.mutation.updateClub(
-            {
-                where: {
-                    id: clubId
                 },
-                data: {
-                    managers: {
-                        disconnect: {
-                            id: managerId
+                info
+            );
+        }
+    ),
+    removeClubManager: combineResolvers(
+        isAuthenticated,
+        isClubManager,
+        async (
+            parent: Club,
+            args: {
+                id: string;
+                userId: string;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { id, userId } = args;
+            const { prisma } = context;
+            const club = await prisma.query.club(
+                {
+                    where: {
+                        id
+                    }
+                },
+                "{ id managers { id } }"
+            );
+            if (!club.managers.some((manager: User) => manager.id === userId)) {
+                throw new Error(NOT_A_MANAGER);
+            }
+            return prisma.mutation.updateClub(
+                {
+                    where: {
+                        id
+                    },
+                    data: {
+                        managers: {
+                            disconnect: {
+                                id: userId
+                            }
                         }
                     }
-                }
-            },
-            info
-        );
-    },
-    joinClub: async (
-        parent: Club,
-        args: { id: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { id } = args;
-        const { request, prisma } = context;
-        const userId = getUserId(request);
-        await clubMiddleware({
-            method: UPDATE,
-            clubId: id,
-            context,
-            operation: clubOperations.JOIN_CLUB
-        });
-        return prisma.mutation.updateClub(
-            {
-                where: {
-                    id
                 },
-                data: {
-                    members: {
-                        connect: {
-                            id: userId
+                info
+            );
+        }
+    ),
+    joinClub: combineResolvers(
+        isAuthenticated,
+        async (
+            parent: Club,
+            args: {
+                id: string;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { id } = args;
+            const { authUserId, prisma } = context;
+            const club = await prisma.query.club(
+                {
+                    where: {
+                        id
+                    }
+                },
+                "{ id members { id } }"
+            );
+            if (club.members.some((member: User) => member.id === authUserId)) {
+                throw new Error(ALREADY_A_MEMBER);
+            }
+            return prisma.mutation.updateClub(
+                {
+                    where: {
+                        id
+                    },
+                    data: {
+                        members: {
+                            connect: {
+                                id: authUserId
+                            }
                         }
                     }
-                }
-            },
-            info
-        );
-    },
-    leaveClub: async (
-        parent: Club,
-        args: { id: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { id } = args;
-        const { request, prisma } = context;
-        const userId = getUserId(request);
-        await clubMiddleware({
-            method: UPDATE,
-            clubId: id,
-            context,
-            operation: clubOperations.LEAVE_CLUB
-        });
-        return prisma.mutation.updateClub(
-            {
-                where: {
-                    id
                 },
-                data: {
-                    members: {
-                        disconnect: {
-                            id: userId
+                info
+            );
+        }
+    ),
+    leaveClub: combineResolvers(
+        isAuthenticated,
+        isClubMember,
+        async (
+            parent: Club,
+            args: {
+                id: string;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { id } = args;
+            const { authUserId, prisma } = context;
+            const club = await prisma.query.club(
+                {
+                    where: {
+                        id
+                    }
+                },
+                "{ id members { id } }"
+            );
+            if (
+                !club.members.some((member: User) => member.id === authUserId)
+            ) {
+                throw new Error(NOT_A_MEMBER);
+            }
+            return prisma.mutation.updateClub(
+                {
+                    where: {
+                        id
+                    },
+                    data: {
+                        members: {
+                            disconnect: {
+                                id: authUserId
+                            }
                         }
                     }
-                }
-            },
-            info
-        );
-    },
-    removeClubMember: async (
-        parent: Club,
-        args: { clubId: string; memberId: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { clubId, memberId } = args;
-        await clubMiddleware({
-            method: UPDATE,
-            clubId,
-            context,
-            operation: clubOperations.REMOVE_CLUB_MEMBER,
-            opUserId: memberId
-        });
-        return context.prisma.mutation.updateClub(
-            {
-                where: {
-                    id: clubId
                 },
-                data: {
-                    members: {
-                        disconnect: {
-                            id: memberId
+                info
+            );
+        }
+    ),
+    removeClubMember: combineResolvers(
+        isAuthenticated,
+        isClubManager,
+        async (
+            parent: Club,
+            args: {
+                id: string;
+                userId: string;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const { id, userId } = args;
+            const { prisma } = context;
+            const club = await prisma.query.club(
+                {
+                    where: {
+                        id
+                    }
+                },
+                "{ id members { id } }"
+            );
+            if (!club.members.some((member: User) => member.id === userId)) {
+                throw new Error(NOT_A_MEMBER);
+            }
+            return prisma.mutation.updateClub(
+                {
+                    where: {
+                        id
+                    },
+                    data: {
+                        members: {
+                            disconnect: {
+                                id: userId
+                            }
                         }
                     }
-                }
+                },
+                info
+            );
+        }
+    ),
+    deleteClub: combineResolvers(
+        isAuthenticated,
+        isClubManager,
+        async (
+            parent: Club,
+            args: {
+                id: string;
             },
-            info
-        );
-    },
-    deleteClub: async (
-        parent: Club,
-        args: { id: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { id } = args;
-        await clubMiddleware({
-            method: DELETE,
-            clubId: id,
-            context
-        });
-        return context.prisma.mutation.deleteClub(
-            {
-                where: {
-                    id
-                }
-            },
-            info
-        );
-    }
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.mutation.deleteClub(
+                {
+                    where: {
+                        id: args.id
+                    }
+                },
+                info
+            )
+    )
 };

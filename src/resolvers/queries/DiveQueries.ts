@@ -1,13 +1,21 @@
-import { getUserId } from "../../authentication/authUtils";
-import { formatQueryArgs } from "../../utils/formatQueryArgs";
+import { GraphQLResolveInfo } from "graphql";
+import { combineResolvers } from "graphql-resolvers";
+
+import { isAuthenticated } from "../middleware";
+
 import { Context, QueryArgs, FieldResolver } from "../../types";
 import { Dive } from "../../types/typeDefs";
-import { GraphQLResolveInfo } from "graphql";
+
+import { formatQueryArgs } from "../../utils/formatQueryArgs";
+
+interface DiveQueryArgs extends QueryArgs {
+    userId: string;
+}
 
 export const DiveQueries = {
     dives: (
         parent: Dive,
-        args: any,
+        args: DiveQueryArgs,
         context: Context,
         info: GraphQLResolveInfo
     ): Promise<FieldResolver> =>
@@ -20,21 +28,21 @@ export const DiveQueries = {
             }),
             info
         ),
-    myDives: (
-        parent: Dive,
-        args: QueryArgs,
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const { request, prisma } = context;
-        const userId = getUserId(request);
-        return prisma.query.dives(
-            formatQueryArgs(args, {
-                user: {
-                    id: userId
-                }
-            }),
-            info
-        );
-    }
+    myDives: combineResolvers(
+        isAuthenticated,
+        (
+            parent: Dive,
+            args: QueryArgs,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.query.dives(
+                formatQueryArgs(args, {
+                    user: {
+                        id: context.authUserId
+                    }
+                }),
+                info
+            )
+    )
 };

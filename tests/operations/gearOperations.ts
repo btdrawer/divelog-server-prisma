@@ -36,6 +36,18 @@ export const getGear: DocumentNode = gql`
     }
 `;
 
+export const getGearById: DocumentNode = gql`
+    query($id: ID!) {
+        gearById(id: $id) {
+            id
+            name
+            brand
+            model
+            type
+        }
+    }
+`;
+
 export const updateGear: DocumentNode = gql`
     mutation($id: ID!, $data: GearInput!) {
         updateGear(id: $id, data: $data) {

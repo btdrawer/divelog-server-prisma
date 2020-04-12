@@ -2,6 +2,7 @@ import { seedDatabase, users, gear } from "./utils/seedDatabase";
 import {
     createGear,
     getGear,
+    getGearById,
     updateGear,
     deleteGear
 } from "./operations/gearOperations";
@@ -84,22 +85,34 @@ describe("Gear", () => {
         ).rejects.toThrow();
     });
 
-    test("Should return one gear by ID", async () => {
+    test("Should return gear by ID", async () => {
         const authenticatedClient = getClient(users[0].token);
 
         const variables = {
-            where: {
-                id: gear[0].output.id
-            }
+            id: gear[0].output.id
         };
 
-        const { data } = await authenticatedClient.mutate({
-            mutation: getGear,
+        const { data } = await authenticatedClient.query({
+            query: getGearById,
             variables
         });
 
-        expect(data.gear.length).toEqual(1);
-        expect(data.gear[0].name).toEqual(gear[0].input.name);
+        expect(data.gearById.name).toEqual(gear[0].input.name);
+    });
+
+    test("Should fail to return gear by ID if not authenticated", async () => {
+        const authenticatedClient = getClient(users[1].token);
+
+        const variables = {
+            id: gear[0].output.id
+        };
+
+        await expect(
+            authenticatedClient.query({
+                query: getGearById,
+                variables
+            })
+        ).rejects.toThrow();
     });
 
     test("Should return one gear by other property", async () => {

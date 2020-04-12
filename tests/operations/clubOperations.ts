@@ -46,6 +46,23 @@ export const getClubs: DocumentNode = gql`
     }
 `;
 
+export const getClub: DocumentNode = gql`
+    query($id: ID!) {
+        club(id: $id) {
+            id
+            name
+            location
+            website
+            managers {
+                id
+            }
+            members {
+                id
+            }
+        }
+    }
+`;
+
 export const updateClub: DocumentNode = gql`
     mutation($id: ID!, $data: UpdateClubInput!) {
         updateClub(id: $id, data: $data) {

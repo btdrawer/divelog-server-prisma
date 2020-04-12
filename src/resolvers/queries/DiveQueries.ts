@@ -2,6 +2,7 @@ import { GraphQLResolveInfo } from "graphql";
 import { combineResolvers } from "graphql-resolvers";
 
 import { isAuthenticated } from "../middleware";
+import { isUserOrDiveIsPublic } from "../middleware/diveMiddleware";
 
 import { Context, QueryArgs, FieldResolver } from "../../types";
 import { Dive } from "../../types/typeDefs";
@@ -42,6 +43,25 @@ export const DiveQueries = {
                         id: context.authUserId
                     }
                 }),
+                info
+            )
+    ),
+    dive: combineResolvers(
+        isUserOrDiveIsPublic,
+        (
+            parent: Dive,
+            args: {
+                id: string;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.query.dive(
+                {
+                    where: {
+                        id: args.id
+                    }
+                },
                 info
             )
     )

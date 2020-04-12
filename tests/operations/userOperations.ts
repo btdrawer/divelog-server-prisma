@@ -51,6 +51,17 @@ export const getUsers: DocumentNode = gql`
     }
 `;
 
+export const getUser: DocumentNode = gql`
+    query($id: ID!) {
+        user(id: $id) {
+            id
+            name
+            username
+            email
+        }
+    }
+`;
+
 export const getMe: DocumentNode = gql`
     query {
         me {

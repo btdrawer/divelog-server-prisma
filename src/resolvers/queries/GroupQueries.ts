@@ -2,6 +2,7 @@ import { GraphQLResolveInfo } from "graphql";
 import { combineResolvers } from "graphql-resolvers";
 
 import { isAuthenticated } from "../middleware";
+import { isGroupParticipant } from "../middleware/groupMiddleware";
 
 import { Context, QueryArgs, FieldResolver } from "../../types";
 import { Group } from "../../types/typeDefs";
@@ -23,6 +24,26 @@ export const GroupQueries = {
                         id: context.authUserId
                     }
                 }),
+                info
+            )
+    ),
+    group: combineResolvers(
+        isAuthenticated,
+        isGroupParticipant,
+        (
+            parent: Group,
+            args: {
+                id: string;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.query.group(
+                {
+                    where: {
+                        id: args.id
+                    }
+                },
                 info
             )
     )

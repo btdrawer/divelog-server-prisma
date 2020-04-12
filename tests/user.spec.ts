@@ -3,6 +3,7 @@ import {
     createUser,
     login,
     getUsers,
+    getUser,
     getMe,
     updateUser,
     deleteUser
@@ -103,6 +104,21 @@ describe("Users", () => {
                 variables
             })
         ).rejects.toThrow();
+    });
+
+    test("Should return user by ID", async () => {
+        const authenticatedClient = getClient(users[0].token);
+
+        const variables = {
+            id: users[1].output.id
+        };
+
+        const { data } = await authenticatedClient.query({
+            query: getUser,
+            variables
+        });
+
+        expect(data.user.id).toEqual(users[1].output.id);
     });
 
     test("Should return logged in user", async () => {

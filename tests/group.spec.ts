@@ -2,6 +2,7 @@ import { seedDatabase, users, groups } from "./utils/seedDatabase";
 import {
     createGroup,
     getMyGroups,
+    getGroup,
     renameGroup,
     sendMessage,
     addGroupParticipant,
@@ -78,24 +79,6 @@ describe("Groups", () => {
         expect(data.myGroups[0].id).toEqual(groups[0].output.id);
     });
 
-    test("Should filter groups by ID", async () => {
-        const authenticatedClient = getClient(users[0].token);
-
-        const variables = {
-            where: {
-                id: groups[0].output.id
-            }
-        };
-
-        const { data } = await authenticatedClient.query({
-            query: getMyGroups,
-            variables
-        });
-
-        expect(data.myGroups.length).toEqual(1);
-        expect(data.myGroups[0].id).toEqual(groups[0].output.id);
-    });
-
     test("Should filter groups by name", async () => {
         const authenticatedClient = getClient(users[0].token);
 
@@ -162,6 +145,49 @@ describe("Groups", () => {
 
         expect(data.myGroups.length).toEqual(1);
         expect(data.myGroups[0].id).toEqual(groups[2].output.id);
+    });
+
+    test("Should return group by ID", async () => {
+        const authenticatedClient = getClient(users[0].token);
+
+        const variables = {
+            id: groups[0].output.id
+        };
+
+        const { data } = await authenticatedClient.query({
+            query: getGroup,
+            variables
+        });
+
+        expect(data.group.id).toEqual(groups[0].output.id);
+    });
+
+    test("Should fail to return group by ID if not a member", async () => {
+        const authenticatedClient = getClient(users[2].token);
+
+        const variables = {
+            id: groups[0].output.id
+        };
+
+        await expect(
+            authenticatedClient.query({
+                query: getGroup,
+                variables
+            })
+        ).rejects.toThrow();
+    });
+
+    test("Should fail to return group by ID if not authenticated", async () => {
+        const variables = {
+            id: groups[0].output.id
+        };
+
+        await expect(
+            client.query({
+                query: getGroup,
+                variables
+            })
+        ).rejects.toThrow();
     });
 
     test("Should rename group", async () => {

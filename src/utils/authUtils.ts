@@ -7,17 +7,14 @@ import { config } from "dotenv";
 config();
 
 export const getAuthData = (
-    req: Request,
-    isSubscription: boolean = false,
-    authIsRequired: boolean = true
+    req: Request
 ): {
     token: string;
     data: string | object;
 } | null => {
-    const header = isSubscription
+    const header = req.connection
         ? req.connection.context.Authorization
         : req.req.headers.authorization;
-    if (!header && authIsRequired) throw new Error(INVALID_AUTH);
 
     if (header) {
         const token = header.replace("Bearer ", "");
@@ -29,12 +26,8 @@ export const getAuthData = (
     return null;
 };
 
-export const getUserId = (
-    req: Request,
-    isSubscription: boolean = false,
-    authIsRequired: boolean = true
-): string => {
-    const authData: any = getAuthData(req, isSubscription, authIsRequired);
+export const getUserId = (req: Request): string => {
+    const authData: any = getAuthData(req);
     return authData ? authData.data.id : null;
 };
 

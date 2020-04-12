@@ -143,8 +143,8 @@ export const updateDive: DocumentNode = gql`
 `;
 
 export const addGearToDive: DocumentNode = gql`
-    mutation($diveId: ID!, $gearId: ID!) {
-        addGearToDive(diveId: $diveId, gearId: $gearId) {
+    mutation($id: ID!, $gearId: ID!) {
+        addGearToDive(id: $id, gearId: $gearId) {
             id
             timeIn
             timeOut
@@ -172,8 +172,8 @@ export const addGearToDive: DocumentNode = gql`
 `;
 
 export const removeGearFromDive: DocumentNode = gql`
-    mutation($diveId: ID!, $gearId: ID!) {
-        removeGearFromDive(diveId: $diveId, gearId: $gearId) {
+    mutation($id: ID!, $gearId: ID!) {
+        removeGearFromDive(id: $id, gearId: $gearId) {
             id
             timeIn
             timeOut
@@ -201,8 +201,8 @@ export const removeGearFromDive: DocumentNode = gql`
 `;
 
 export const addBuddyToDive: DocumentNode = gql`
-    mutation($diveId: ID!, $buddyId: ID!) {
-        addBuddyToDive(diveId: $diveId, buddyId: $buddyId) {
+    mutation($id: ID!, $buddyId: ID!) {
+        addBuddyToDive(id: $id, buddyId: $buddyId) {
             id
             timeIn
             timeOut
@@ -230,8 +230,8 @@ export const addBuddyToDive: DocumentNode = gql`
 `;
 
 export const removeBuddyFromDive: DocumentNode = gql`
-    mutation($diveId: ID!, $buddyId: ID!) {
-        removeBuddyFromDive(diveId: $diveId, buddyId: $buddyId) {
+    mutation($id: ID!, $buddyId: ID!) {
+        removeBuddyFromDive(id: $id, buddyId: $buddyId) {
             id
             timeIn
             timeOut

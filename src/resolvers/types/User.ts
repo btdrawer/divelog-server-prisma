@@ -1,4 +1,4 @@
-import { getUserId } from "../../authentication/authUtils";
+import { getUserId } from "../../utils/authUtils";
 import { User as UserSchema } from "../../types/typeDefs";
 import { Context, QueryArgs } from "../../types";
 
@@ -8,8 +8,8 @@ export const User = {
     email: {
         fragment: FRAGMENT_USER_ID,
         resolve: (parent: UserSchema, args: QueryArgs, context: Context) => {
-            const userId = getUserId(context.request, false, false);
-            if (userId && userId === parent.id) {
+            const { authUserId } = context;
+            if (authUserId && authUserId === parent.id) {
                 return parent.email;
             }
             return null;
@@ -18,11 +18,11 @@ export const User = {
     dives: {
         fragment: FRAGMENT_USER_ID,
         resolve: (parent: UserSchema, args: QueryArgs, context: Context) => {
-            const userId = getUserId(context.request, false, false);
-            if (userId && userId === parent.id) {
+            const { authUserId, prisma } = context;
+            if (authUserId && authUserId === parent.id) {
                 return parent.dives;
             }
-            return context.prisma.query.dives({
+            return prisma.query.dives({
                 where: {
                     user: parent.id,
                     public: true
@@ -33,8 +33,8 @@ export const User = {
     gear: {
         fragment: FRAGMENT_USER_ID,
         resolve: (parent: UserSchema, args: QueryArgs, context: Context) => {
-            const userId = getUserId(context.request, false, false);
-            if (userId && userId === parent.id) {
+            const { authUserId } = context;
+            if (authUserId && authUserId === parent.id) {
                 return parent.gear;
             }
             return null;
@@ -43,8 +43,8 @@ export const User = {
     friends: {
         fragment: FRAGMENT_USER_ID,
         resolve: (parent: UserSchema, args: QueryArgs, context: Context) => {
-            const userId = getUserId(context.request, false, false);
-            if (userId && userId === parent.id) {
+            const { authUserId } = context;
+            if (authUserId && authUserId === parent.id) {
                 return parent.friends;
             }
             return null;
@@ -53,8 +53,8 @@ export const User = {
     friendRequestsInbox: {
         fragment: FRAGMENT_USER_ID,
         resolve: (parent: UserSchema, args: QueryArgs, context: Context) => {
-            const userId = getUserId(context.request, false, false);
-            if (userId && userId === parent.id) {
+            const { authUserId } = context;
+            if (authUserId && authUserId === parent.id) {
                 return parent.friendRequestsInbox;
             }
             return null;
@@ -63,8 +63,8 @@ export const User = {
     friendRequestsSent: {
         fragment: FRAGMENT_USER_ID,
         resolve: (parent: UserSchema, args: QueryArgs, context: Context) => {
-            const userId = getUserId(context.request, false, false);
-            if (userId && userId === parent.id) {
+            const { authUserId } = context;
+            if (authUserId && authUserId === parent.id) {
                 return parent.friendRequestsSent;
             }
             return null;

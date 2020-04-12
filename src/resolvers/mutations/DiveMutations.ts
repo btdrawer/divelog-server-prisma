@@ -1,17 +1,15 @@
-import { getUserId } from "../../authentication/authUtils";
-import diveMiddleware from "../../authentication/middleware/diveMiddleware";
-import { UPDATE, DELETE } from "../../constants/methods";
+import { GraphQLResolveInfo } from "graphql";
+import { combineResolvers } from "graphql-resolvers";
 import moment from "moment";
+
+import { isAuthenticated } from "../middleware";
+import { isDiveUser } from "../middleware/diveMiddleware";
+
 import { Context, FieldResolver } from "../../types";
 import { Dive } from "../../types/typeDefs";
-import {
-    MutateDiveInput,
-    CreateDiveInput,
-    UpdateDiveInput
-} from "../../types/inputs";
-import { GraphQLResolveInfo } from "graphql";
+import { CreateDiveInput, UpdateDiveInput } from "../../types/inputs";
 
-const processTime = (data: MutateDiveInput): object => {
+const processTime = (data: any): object => {
     let { timeIn, timeOut } = data;
     let diveTime: number = 0;
     if (timeIn) {
@@ -31,164 +29,191 @@ const processTime = (data: MutateDiveInput): object => {
     };
 };
 
-const updateOperationTemplate = async (input: {
-    diveId: string;
-    data: object;
-    context: Context;
-    info: GraphQLResolveInfo;
-}): Promise<FieldResolver> => {
-    const { diveId, data, context, info } = input;
-    await diveMiddleware({
-        method: UPDATE,
-        diveId,
-        context
-    });
-    return context.prisma.mutation.updateDive(
-        {
-            where: {
-                id: diveId
-            },
-            data
-        },
-        info
-    );
+type DiveGearArgs = {
+    id: string;
+    gearId: string;
+};
+
+type DiveBuddyArgs = {
+    id: string;
+    buddyId: string;
 };
 
 export const DiveMutations = {
-    createDive: async (
-        parent: Dive,
-        args: {
-            data: CreateDiveInput;
-        },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        const formattedData = { ...args.data };
-        const { request, prisma } = context;
-        if (formattedData.club) {
-            formattedData.club = {
-                connect: {
-                    id: formattedData.club
-                }
-            };
-        }
-        const userId = getUserId(request);
-        return prisma.mutation.createDive(
-            {
-                data: {
-                    ...processTime(formattedData),
-                    user: {
-                        connect: {
-                            id: userId
+    createDive: combineResolvers(
+        isAuthenticated,
+        async (
+            parent: Dive,
+            args: {
+                data: CreateDiveInput;
+            },
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> => {
+            const formattedData = { ...args.data };
+            const { authUserId, prisma } = context;
+            if (formattedData.club) {
+                formattedData.club = {
+                    connect: {
+                        id: formattedData.club
+                    }
+                };
+            }
+            return prisma.mutation.createDive(
+                {
+                    data: {
+                        ...processTime(formattedData),
+                        user: {
+                            connect: {
+                                id: authUserId
+                            }
                         }
                     }
-                }
+                },
+                info
+            );
+        }
+    ),
+    updateDive: combineResolvers(
+        isAuthenticated,
+        isDiveUser,
+        async (
+            parent: Dive,
+            args: {
+                id: string;
+                data: UpdateDiveInput;
             },
-            info
-        );
-    },
-    updateDive: (
-        parent: Dive,
-        data: { id: string; data: UpdateDiveInput },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> =>
-        updateOperationTemplate({
-            diveId: data.id,
-            data: processTime(data.data),
-            context,
-            info
-        }),
-    addGearToDive: (
-        parent: Dive,
-        data: { diveId: string; gearId: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> =>
-        updateOperationTemplate({
-            diveId: data.diveId,
-            data: {
-                gear: {
-                    connect: {
-                        id: data.gearId
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.mutation.updateDive(
+                {
+                    where: {
+                        id: args.id
+                    },
+                    data: processTime(args.data)
+                },
+                info
+            )
+    ),
+    addGearToDive: combineResolvers(
+        isAuthenticated,
+        isDiveUser,
+        async (
+            parent: Dive,
+            args: DiveGearArgs,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.mutation.updateDive(
+                {
+                    where: {
+                        id: args.id
+                    },
+                    data: {
+                        gear: {
+                            connect: {
+                                id: args.gearId
+                            }
+                        }
                     }
-                }
-            },
-            context,
-            info
-        }),
-    removeGearFromDive: (
-        parent: Dive,
-        data: { diveId: string; gearId: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> =>
-        updateOperationTemplate({
-            diveId: data.diveId,
-            data: {
-                gear: {
-                    disconnect: {
-                        id: data.gearId
+                },
+                info
+            )
+    ),
+    removeGearFromDive: combineResolvers(
+        isAuthenticated,
+        isDiveUser,
+        async (
+            parent: Dive,
+            args: DiveGearArgs,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.mutation.updateDive(
+                {
+                    where: {
+                        id: args.id
+                    },
+                    data: {
+                        gear: {
+                            disconnect: {
+                                id: args.gearId
+                            }
+                        }
                     }
-                }
-            },
-            context,
-            info
-        }),
-    addBuddyToDive: (
-        parent: Dive,
-        data: { diveId: string; buddyId: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> =>
-        updateOperationTemplate({
-            diveId: data.diveId,
-            data: {
-                buddies: {
-                    connect: {
-                        id: data.buddyId
+                },
+                info
+            )
+    ),
+    addBuddyToDive: combineResolvers(
+        isAuthenticated,
+        isDiveUser,
+        async (
+            parent: Dive,
+            args: DiveBuddyArgs,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.mutation.updateDive(
+                {
+                    where: {
+                        id: args.id
+                    },
+                    data: {
+                        buddies: {
+                            connect: {
+                                id: args.buddyId
+                            }
+                        }
                     }
-                }
-            },
-            context,
-            info
-        }),
-    removeBuddyFromDive: (
-        parent: Dive,
-        data: { diveId: string; buddyId: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> =>
-        updateOperationTemplate({
-            diveId: data.diveId,
-            data: {
-                buddies: {
-                    disconnect: {
-                        id: data.buddyId
+                },
+                info
+            )
+    ),
+    removeBuddyFromDive: combineResolvers(
+        isAuthenticated,
+        isDiveUser,
+        async (
+            parent: Dive,
+            args: DiveBuddyArgs,
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.mutation.updateDive(
+                {
+                    where: {
+                        id: args.id
+                    },
+                    data: {
+                        buddies: {
+                            disconnect: {
+                                id: args.buddyId
+                            }
+                        }
                     }
-                }
+                },
+                info
+            )
+    ),
+    deleteDive: combineResolvers(
+        isAuthenticated,
+        isDiveUser,
+        async (
+            parent: Dive,
+            args: {
+                id: string;
             },
-            context,
-            info
-        }),
-    deleteDive: async (
-        parent: Dive,
-        data: { id: string },
-        context: Context,
-        info: GraphQLResolveInfo
-    ): Promise<FieldResolver> => {
-        await diveMiddleware({
-            method: DELETE,
-            diveId: data.id,
-            context
-        });
-        return context.prisma.mutation.deleteDive(
-            {
-                where: {
-                    id: data.id
-                }
-            },
-            info
-        );
-    }
+            context: Context,
+            info: GraphQLResolveInfo
+        ): Promise<FieldResolver> =>
+            context.prisma.mutation.deleteDive(
+                {
+                    where: {
+                        id: args.id
+                    }
+                },
+                info
+            )
+    )
 };

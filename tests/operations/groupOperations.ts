@@ -83,8 +83,8 @@ export const sendMessage: DocumentNode = gql`
 `;
 
 export const addGroupParticipant: DocumentNode = gql`
-    mutation($groupId: ID!, $memberId: ID!) {
-        addGroupParticipant(groupId: $groupId, memberId: $memberId) {
+    mutation($id: ID!, $userId: ID!) {
+        addGroupParticipant(id: $id, userId: $userId) {
             id
             name
             participants {

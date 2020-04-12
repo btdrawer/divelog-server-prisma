@@ -1,5 +1,5 @@
 import prisma from "../../src/prisma";
-import { signJwt, hashPassword } from "../../src/authentication/authUtils";
+import { signJwt, hashPassword } from "../../src/utils/authUtils";
 import {
     AuthPayload,
     User,

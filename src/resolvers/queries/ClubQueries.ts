@@ -1,7 +1,8 @@
+import { GraphQLResolveInfo } from "graphql";
+
 import { formatQueryArgs } from "../../utils/formatQueryArgs";
 import { Context, QueryArgs, FieldResolver } from "../../types";
 import { Club } from "../../types/typeDefs";
-import { GraphQLResolveInfo } from "graphql";
 
 export const ClubQueries = {
     clubs: (

@@ -16,11 +16,27 @@ export const UserQueries = {
         info: GraphQLResolveInfo
     ): Promise<FieldResolver> =>
         context.prisma.query.users(formatQueryArgs(args), info),
+    user: (
+        parent: User,
+        args: {
+            id: string;
+        },
+        context: Context,
+        info: GraphQLResolveInfo
+    ): Promise<FieldResolver> =>
+        context.prisma.query.user(
+            {
+                where: {
+                    id: args.id
+                }
+            },
+            info
+        ),
     me: combineResolvers(
         isAuthenticated,
         (
             parent: User,
-            args: QueryArgs,
+            args: null,
             context: Context,
             info: GraphQLResolveInfo
         ): Promise<FieldResolver> =>

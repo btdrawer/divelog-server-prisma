@@ -3,6 +3,7 @@ import {
     createDive,
     getDives,
     getMyDives,
+    getDive,
     updateDive,
     addGearToDive,
     removeGearFromDive,
@@ -93,19 +94,58 @@ describe("Dives", () => {
 
     test("Should return a dive by its ID", async () => {
         const variables = {
-            userId: users[0].output.id,
-            where: {
-                id: dives[0].output.id
-            }
+            id: dives[0].output.id
         };
 
         const { data } = await client.query({
-            query: getDives,
+            query: getDive,
             variables
         });
 
-        expect(data.dives.length).toEqual(1);
-        expect(data.dives[0].description).toEqual(dives[0].input.description);
+        expect(data.dive.description).toEqual(dives[0].input.description);
+    });
+
+    test("Should return a private dive by its ID if authenticated", async () => {
+        const authenticatedClient = getClient(users[0].token);
+
+        const variables = {
+            id: dives[1].output.id
+        };
+
+        const { data } = await authenticatedClient.query({
+            query: getDive,
+            variables
+        });
+
+        expect(data.dive.description).toEqual(dives[1].input.description);
+    });
+
+    test("Should fail to return a private dive by its ID if logged in as different user", async () => {
+        const authenticatedClient = getClient(users[1].token);
+
+        const variables = {
+            id: dives[1].output.id
+        };
+
+        await expect(
+            authenticatedClient.query({
+                query: getDive,
+                variables
+            })
+        ).rejects.toThrow();
+    });
+
+    test("Should fail to return a private dive by its ID if not logged in", async () => {
+        const variables = {
+            id: dives[1].output.id
+        };
+
+        await expect(
+            client.query({
+                query: getDive,
+                variables
+            })
+        ).rejects.toThrow();
     });
 
     test("Should limit results", async () => {
@@ -148,22 +188,12 @@ describe("Dives", () => {
         expect(data.myDives.length).toEqual(3);
     });
 
-    test("Should return a private dive by its ID", async () => {
-        const authenticatedClient = getClient(users[0].token);
-
-        const variables = {
-            where: {
-                id: dives[1].output.id
-            }
-        };
-
-        const { data } = await authenticatedClient.query({
-            query: getMyDives,
-            variables
-        });
-
-        expect(data.myDives.length).toEqual(1);
-        expect(data.myDives[0].description).toEqual(dives[1].input.description);
+    test("Should fail to retrieve users dives if user is not authenticated", async () => {
+        await expect(
+            client.query({
+                query: getMyDives
+            })
+        ).rejects.toThrow();
     });
 
     test("Should limit results", async () => {

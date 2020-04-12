@@ -3,7 +3,7 @@ module.exports = {
     globalSetup: "./tests/setup/globalSetup.js",
     globalTeardown: "./tests/setup/globalTeardown.js",
     transform: {
-        "(.).ts": "ts-jest"
+        "\\.(ts|tsx)$": "ts-jest"
     },
     testEnvironment: "node"
 };

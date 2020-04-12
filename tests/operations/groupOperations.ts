@@ -47,6 +47,22 @@ export const getMyGroups: DocumentNode = gql`
     }
 `;
 
+export const getGroup: DocumentNode = gql`
+    query($id: ID!) {
+        group(id: $id) {
+            id
+            name
+            participants {
+                id
+            }
+            messages {
+                id
+                text
+            }
+        }
+    }
+`;
+
 export const renameGroup: DocumentNode = gql`
     mutation($id: ID!, $name: String!) {
         renameGroup(id: $id, name: $name) {

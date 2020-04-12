@@ -6,6 +6,8 @@ type Query {
         limit: Int
         skip: Int
     ): [User!]!
+    user(id: ID!): User!
+    me: User!
     dives(
         userId: ID!
         where: DiveWhereInput
@@ -21,6 +23,7 @@ type Query {
         limit: Int
         skip: Int
     ): [Dive!]!
+    dive(id: ID!): Dive!
     clubs(
         where: ClubWhereInput
         sortBy: ClubSortEnum
@@ -28,6 +31,7 @@ type Query {
         limit: Int
         skip: Int
     ): [Club!]!
+    club(id: ID!): Club!
     gear(
         where: GearWhereInput
         sortBy: GearSortEnum
@@ -35,6 +39,7 @@ type Query {
         limit: Int
         skip: Int
     ): [Gear!]!
+    gearById(id: ID!): Gear!
     myGroups(
         where: GroupWhereInput
         sortBy: GroupSortEnum
@@ -42,7 +47,7 @@ type Query {
         limit: Int
         skip: Int
     ): [Group!]!
-    me: User!
+    group(id: ID!): Group!
 }
 
 type Mutation {
@@ -83,7 +88,7 @@ type Mutation {
 }
 
 type Subscription {
-    newMessage(groupId: ID!): NewMessagePayload!
+    newMessage(id: ID!): NewMessagePayload!
 }
 
 type User {

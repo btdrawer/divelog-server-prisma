@@ -22,12 +22,15 @@ You will also need to install **Prisma** globally: `npm i -g prisma`
 
 Add a `.env` file to the `config` folder, with the following variables:
 
+-   `SERVER_PORT`: The port that the server should listen on.
 -   `MONGODB_URL`: The URL of your MongoDB database.
 -   `MONGODB_SCHEMA`: The name of your MongoDB schema.
 -   `JWT_KEY`: The secret key that your JSON Web Tokens will be signed with.
--   `SERVER_PORT`: The port that the server should listen on.
--   `PRISMA_ENDPOINT`: The endpoint that your Prisma server should be hosted on.
+-   `PRISMA_ENDPOINT`: The endpoint that your Prisma server is hosted on.
+-   `PRISMA_PORT`: The port that your Prisma server is listening on.
 -   `PRISMA_SECRET`: The secret required to access your Prisma server.
+-   `REDIS_HOST`: The host of your Redis server.
+-   `REDIS_PORT`: The port that your Redis server is listening on.
 
 To set up your Prisma server, `cd` into the `prisma` folder in the root of the repository, and run `prisma init`. The wizard will guide you through the setup.
 

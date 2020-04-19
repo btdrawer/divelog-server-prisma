@@ -1,6 +1,7 @@
 import { ApolloServer } from "apollo-server";
 import { importSchema } from "graphql-import";
 import { makeExecutableSchema } from "graphql-tools";
+import { RedisCache } from "apollo-server-cache-redis";
 
 import prisma from "./prisma";
 import { resolvers } from "./resolvers/index";
@@ -18,6 +19,10 @@ const server = (): ApolloServer =>
         context: request => ({
             authUserId: getUserId(<Request>request),
             prisma
+        }),
+        cache: new RedisCache({
+            host: process.env.REDIS_HOST,
+            port: parseInt(<string>process.env.REDIS_PORT) || 6379
         })
     });
 

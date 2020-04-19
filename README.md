@@ -1,6 +1,8 @@
 # divelog-server-prisma
 
-Another version of my `divelog-server` project, this time using the Prisma ORM **and** TypeScript (which I haven't used before). Functionally very similar to [`divelog-server-graphql`](https://github.com/btdrawer/divelog-server-graphql), with some minor schema changes to make it work better with Prisma. This project was designed to run with MongoDB, but only some minor changes will be required to implement it using a relational database (as long as it is supported by Prisma).
+Another version of my `divelog-server` project, this time using the Prisma ORM **and** TypeScript (which I haven't used before). Functionally very similar to [`divelog-server-graphql`](https://github.com/btdrawer/divelog-server-graphql), with some minor schema changes to make it work better with Prisma. (One major difference, though is the lack of cursor-based pagination here. Sorry. I might implement it one day.)
+
+This project was designed to run with MongoDB, but only some minor changes will be required to implement it using a relational database (as long as it is supported by Prisma).
 
 I learned about GraphQL, Prisma, and how to implement it into NodeJS from the Udemy course [The Modern GraphQL Bootcamp (with Node.js and Apollo)](https://www.udemy.com/course/graphql-bootcamp/).
 

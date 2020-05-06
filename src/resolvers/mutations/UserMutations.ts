@@ -1,19 +1,21 @@
 import { GraphQLResolveInfo } from "graphql";
 import { combineResolvers } from "graphql-resolvers";
-import * as bcrypt from "bcrypt";
-
-import { signJwt, hashPassword } from "../../utils/authUtils";
 import {
+    errorCodes,
+    signJwt,
+    hashPassword,
+    comparePassword
+} from "@btdrawer/divelog-server-utils";
+import { Context, FieldResolver } from "../../types";
+import { User, Club } from "../../types/typeDefs";
+import { isAuthenticated } from "../middleware";
+
+const {
     INVALID_AUTH,
     CANNOT_ADD_YOURSELF,
     FRIEND_REQUEST_ALREADY_SENT,
     ALREADY_FRIENDS
-} from "../../constants/errorCodes";
-
-import { Context, FieldResolver } from "../../types";
-import { User, Club } from "../../types/typeDefs";
-
-import { isAuthenticated } from "../middleware";
+} = errorCodes;
 
 const formatAuthPayload = (user: User, token: string): any => ({
     user: {
@@ -53,7 +55,7 @@ export const UserMutations = {
         if (!user) {
             throw new Error(INVALID_AUTH);
         }
-        const isValidPassword = bcrypt.compareSync(password, user.password);
+        const isValidPassword = comparePassword(password, user.password);
         if (!isValidPassword) {
             throw new Error(INVALID_AUTH);
         }

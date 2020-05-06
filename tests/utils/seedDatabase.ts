@@ -1,5 +1,5 @@
+import { signJwt, hashPassword } from "@btdrawer/divelog-server-utils";
 import prisma from "../../src/prisma";
-import { signJwt, hashPassword } from "../../src/utils/authUtils";
 import {
     AuthPayload,
     User,

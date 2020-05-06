@@ -1,10 +1,10 @@
 import { skip } from "graphql-resolvers";
 import { GraphQLResolveInfo } from "graphql";
-
+import { errorCodes } from "@btdrawer/divelog-server-utils";
 import { Context } from "../../types";
 import { Club, User } from "../../types/typeDefs";
 
-import { NOT_FOUND, FORBIDDEN } from "../../constants/errorCodes";
+const { NOT_FOUND, FORBIDDEN } = errorCodes;
 
 export const isClubManager = async (
     parent: Club,

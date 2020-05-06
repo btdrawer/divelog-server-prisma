@@ -1,7 +1,5 @@
 import { combineResolvers } from "graphql-resolvers";
-
 import { Context } from "../types";
-
 import { isAuthenticated } from "./middleware";
 import { isGroupParticipant } from "./middleware/groupMiddleware";
 

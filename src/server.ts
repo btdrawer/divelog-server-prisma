@@ -5,7 +5,7 @@ import { RedisCache } from "apollo-server-cache-redis";
 
 import prisma from "./prisma";
 import { resolvers } from "./resolvers/index";
-import { getUserId } from "./utils/authUtils";
+import getUserId from "./utils/getUserId";
 import { Request } from "./types";
 
 const executableSchema = makeExecutableSchema({

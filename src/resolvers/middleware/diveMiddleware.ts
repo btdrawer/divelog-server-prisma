@@ -1,10 +1,10 @@
 import { GraphQLResolveInfo } from "graphql";
 import { skip } from "graphql-resolvers";
-
+import { errorCodes } from "@btdrawer/divelog-server-utils";
 import { Context } from "../../types";
 import { Dive } from "../../types/typeDefs";
 
-import { NOT_FOUND, FORBIDDEN } from "../../constants/errorCodes";
+const { NOT_FOUND, FORBIDDEN } = errorCodes;
 
 export const isDiveUser = async (
     parent: Dive,

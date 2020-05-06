@@ -1,9 +1,8 @@
 import { GraphQLResolveInfo } from "graphql";
 import { combineResolvers } from "graphql-resolvers";
-
+import { errorCodes } from "@btdrawer/divelog-server-utils";
 import { isAuthenticated } from "../middleware";
 import { isClubManager, isClubMember } from "../middleware/clubMiddleware";
-
 import { Context, FieldResolver } from "../../types";
 import { Club, User } from "../../types/typeDefs";
 import { CreateClubInput, UpdateClubInput } from "../../types/inputs";
@@ -13,7 +12,7 @@ const {
     NOT_A_MANAGER,
     ALREADY_A_MEMBER,
     NOT_A_MEMBER
-} = require("../../constants/errorCodes");
+} = errorCodes;
 
 export const ClubMutations = {
     createClub: combineResolvers(

@@ -1,8 +1,10 @@
 import { skip } from "graphql-resolvers";
 import { GraphQLResolveInfo } from "graphql";
-import { Context, FieldResolver } from "../types";
+import { errorCodes } from "@btdrawer/divelog-server-utils";
+import { Context } from "../types";
 import { TypeDef } from "../types/typeDefs";
-import { NOT_FOUND, FORBIDDEN } from "../constants/errorCodes";
+
+const { NOT_FOUND, FORBIDDEN } = errorCodes;
 
 const hasAccess = (
     resource: string,

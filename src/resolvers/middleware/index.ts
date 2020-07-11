@@ -1,9 +1,9 @@
 import { skip } from "graphql-resolvers";
-
+import { errorCodes } from "@btdrawer/divelog-server-utils";
 import { Context } from "../../types";
 import { TypeDef } from "../../types/typeDefs";
 
-import { INVALID_AUTH } from "../../constants/errorCodes";
+const { INVALID_AUTH } = errorCodes;
 
 export const isAuthenticated = async (
     parent: TypeDef,

@@ -1,4 +1,3 @@
-import { getUserId } from "../../utils/authUtils";
 import { User as UserSchema } from "../../types/typeDefs";
 import { Context, QueryArgs } from "../../types";
 

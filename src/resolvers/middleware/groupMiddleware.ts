@@ -1,35 +1,11 @@
-import { GraphQLResolveInfo } from "graphql";
-import { skip } from "graphql-resolvers";
-
-import { Context } from "../../types";
 import { Group, User } from "../../types/typeDefs";
+import hasAccess from "../../utils/hasAccess";
 
-import { NOT_FOUND, FORBIDDEN } from "../../constants/errorCodes";
-
-export const isGroupParticipant = async (
-    parent: Group,
-    args: any,
-    context: Context,
-    info: GraphQLResolveInfo
-): Promise<undefined> => {
-    const { authUserId, prisma } = context;
-    const group = await prisma.query.group(
-        {
-            where: {
-                id: args.id
-            }
-        },
-        "{ id participants { id } }"
-    );
-    if (!group) {
-        throw new Error(NOT_FOUND);
-    }
-    if (
-        !group.participants.some(
+export const isGroupParticipant = hasAccess(
+    "group",
+    "{ id participants { id } }",
+    (group: Group, authUserId: string) =>
+        group.participants.some(
             (participant: User) => participant.id === authUserId
         )
-    ) {
-        throw new Error(FORBIDDEN);
-    }
-    return skip;
-};
+);

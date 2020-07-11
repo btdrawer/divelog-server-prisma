@@ -7,7 +7,7 @@
         "start:nocompile": "env-cmd -f ./config/.env node built/app.js",
         "get-schema": "graphql get-schema -p prisma --dotenv ./config/.env",
         "lint": "eslint --fix .",
-        "test": "env-cmd -f ./config/.test.env jest --runInBand",
+        "test": "env-cmd -f ./config/.test.env jest --runInBand --forceExit",
         "test:watch": "env-cmd -f ./config/.test.env jest --runInBand --watch"
     },
     "dependencies": {
